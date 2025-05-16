@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace GestionFarmacia.Entities
 {
-    class Producto
+    public class Producto
     {
  
         public int ProductoID { get; set; }

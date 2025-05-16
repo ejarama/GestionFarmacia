@@ -48,9 +48,19 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Data\DatabaseConnection.cs" />
-    <Compile Include="Data\ProductoRepository.cs" />
+    <Compile Include="Data\Interfaces\IDetalleVentaRepository.cs" />
+    <Compile Include="Data\Interfaces\IProveedorProductoRepository.cs" />
+    <Compile Include="Data\Interfaces\IProveedorRepository.cs" />
+    <Compile Include="Data\Interfaces\IVentaRepository.cs" />
+    <Compile Include="Data\Interfaces\IProductoRepository.cs" />
+    <Compile Include="Data\Repositories\DetalleVentaRepository.cs" />
+    <Compile Include="Data\Interfaces\IUsuarioRepository.cs" />
+    <Compile Include="Data\Repositories\ProductoRepository.cs" />
+    <Compile Include="Data\Repositories\ProveedorProductoRepository.cs" />
+    <Compile Include="Data\Repositories\ProveedorRepository.cs" />
+    <Compile Include="Data\Repositories\UsuarioRepository.cs" />
     <Compile Include="Data\UnitOfWork.cs" />
-    <Compile Include="Data\VentaRepository.cs" />
+    <Compile Include="Data\Repositories\VentaRepository.cs" />
     <Compile Include="Entities\DetalleVenta.cs" />
     <Compile Include="Entities\Producto.cs" />
     <Compile Include="Entities\Proveedor.cs" />
