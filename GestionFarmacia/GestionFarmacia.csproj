@@ -54,6 +54,7 @@
     <Compile Include="Entities\DetalleVenta.cs" />
     <Compile Include="Entities\Producto.cs" />
     <Compile Include="Entities\Proveedor.cs" />
+    <Compile Include="Entities\ProveedorProducto.cs" />
     <Compile Include="Entities\Usuario.cs" />
     <Compile Include="Entities\Venta.cs" />
     <Compile Include="Factory\ReporteFactory.cs" />

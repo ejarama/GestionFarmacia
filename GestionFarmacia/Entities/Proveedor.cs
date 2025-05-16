@@ -8,5 +8,9 @@ namespace GestionFarmacia.Entities
 {
     class Proveedor
     {
+        public int ProveedorID { get; set; }
+        public string Nombre { get; set; }
+        public string Contacto { get; set; }
+        public List<ProveedorProducto> Productos { get; set; }
     }
 }
