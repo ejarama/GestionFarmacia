@@ -16,5 +16,15 @@ namespace GestionFarmacia.Forms
         {
             InitializeComponent();
         }
+
+        private void lblInciar_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btnIniciarSesion_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }
