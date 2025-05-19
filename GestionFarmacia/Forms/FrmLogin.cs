@@ -59,5 +59,10 @@ namespace GestionFarmacia.Forms
                 Console.WriteLine("Error en FrmLogin: " + ex.Message);
             }
         }
+
+        private void FrmLogin_Load(object sender, EventArgs e)
+        {
+
+        }
     }
 }

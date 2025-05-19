@@ -86,5 +86,10 @@ namespace GestionFarmacia
             this.Hide(); // Opcional
             Application.Restart(); // Reinicia y vuelve al login
         }
+
+        private void FrmPrincipal_Load(object sender, EventArgs e)
+        {
+
+        }
     }
 }
