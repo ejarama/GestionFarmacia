@@ -172,7 +172,7 @@ namespace GestionFarmacia.Data.Repositories
                     {
                         UsuarioID = Convert.ToInt32(reader["UsuarioID"]),
                         NombreUsuario = reader["NombreUsuario"].ToString(),
-                        Contraseña = reader["Contrasena"].ToString(),
+                        Contraseña = reader["Contraseña"].ToString(),
                         Rol = reader["Rol"].ToString()
                     };
                 }

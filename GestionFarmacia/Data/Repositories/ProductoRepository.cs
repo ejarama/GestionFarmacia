@@ -9,19 +9,20 @@ namespace Data.Repositories
 {
     public class ProductoRepository : IProductoRepository
     {
-        private readonly string _connectionString;
+       
+        private readonly SqlConnection _connectionString;
 
-        public ProductoRepository(string connectionString)
+        public ProductoRepository()
         {
-            _connectionString = connectionString;
+            _connectionString = DatabaseConnection.Instance.GetConnection();
         }
 
         public void Insertar(Producto producto)
         {
             try
             {
-                using (SqlConnection conn = new SqlConnection(_connectionString))
-                using (SqlCommand cmd = new SqlCommand("SP_InsertarProducto", conn))
+               
+                using (SqlCommand cmd = new SqlCommand("SP_InsertarProducto", _connectionString))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
 
@@ -31,7 +32,9 @@ namespace Data.Repositories
                     cmd.Parameters.AddWithValue("@CantidadStock", producto.CantidadStock);
                     cmd.Parameters.AddWithValue("@StockMinimo", producto.StockMinimo);
 
-                    conn.Open();
+                    if (_connectionString.State != ConnectionState.Open)
+                        _connectionString.Open();
+
                     cmd.ExecuteNonQuery();
                 }
             }
@@ -45,8 +48,8 @@ namespace Data.Repositories
         {
             try
             {
-                using (SqlConnection conn = new SqlConnection(_connectionString))
-                using (SqlCommand cmd = new SqlCommand("SP_ActualizarProducto", conn))
+                
+                using (SqlCommand cmd = new SqlCommand("SP_ActualizarProducto", _connectionString))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
 
@@ -57,7 +60,8 @@ namespace Data.Repositories
                     cmd.Parameters.AddWithValue("@CantidadStock", producto.CantidadStock);
                     cmd.Parameters.AddWithValue("@StockMinimo", producto.StockMinimo);
 
-                    conn.Open();
+                    if (_connectionString.State != ConnectionState.Open)
+                        _connectionString.Open();
                     cmd.ExecuteNonQuery();
                 }
             }
@@ -71,14 +75,15 @@ namespace Data.Repositories
         {
             try
             {
-                using (SqlConnection conn = new SqlConnection(_connectionString))
-                using (SqlCommand cmd = new SqlCommand("SP_BorrarProducto", conn))
+                
+                using (SqlCommand cmd = new SqlCommand("SP_BorrarProducto", _connectionString))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
 
                     cmd.Parameters.AddWithValue("@ProductoID", productoId);
 
-                    conn.Open();
+                    if (_connectionString.State != ConnectionState.Open)
+                        _connectionString.Open();
                     cmd.ExecuteNonQuery();
                 }
             }
@@ -93,13 +98,14 @@ namespace Data.Repositories
         {
             try
             {
-                using (SqlConnection conn = new SqlConnection(_connectionString))
-                using (SqlCommand cmd = new SqlCommand("SP_ConsultarProducto", conn))
+            
+                using (SqlCommand cmd = new SqlCommand("SP_ConsultarProducto", _connectionString))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.Parameters.AddWithValue("@ProductoID", productoId);
 
-                    conn.Open();
+                    if (_connectionString.State != ConnectionState.Open)
+                        _connectionString.Open();
                     using (SqlDataReader reader = cmd.ExecuteReader())
                     {
                         if (reader.Read())
@@ -130,14 +136,15 @@ namespace Data.Repositories
 
             try
             {
-                using (SqlConnection conn = new SqlConnection(_connectionString))
-                using (SqlCommand cmd = new SqlCommand("SP_ConsultarProducto", conn))
+                
+                using (SqlCommand cmd = new SqlCommand("SP_ConsultarProducto", _connectionString))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
                     // Para obtener todos, suponemos que el SP acepta NULL para ProductoID
                     cmd.Parameters.AddWithValue("@ProductoID", DBNull.Value);
 
-                    conn.Open();
+                    if (_connectionString.State != ConnectionState.Open)
+                        _connectionString.Open();
                     using (SqlDataReader reader = cmd.ExecuteReader())
                     {
                         while (reader.Read())

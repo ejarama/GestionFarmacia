@@ -13,5 +13,7 @@ namespace GestionFarmacia.Data.Interfaces
         bool Actualizar(Proveedor proveedor);
         bool Eliminar(int proveedorId);
         List<Proveedor> Consultar(int? proveedorId = null);
+
+        List<Proveedor> BuscarPorNombre(string nombre);
     }
 }

@@ -144,5 +144,47 @@ namespace GestionFarmacia.Data.Repositories
 
             return lista;
         }
+
+        public List<Proveedor> BuscarPorNombre(string nombre)
+        {
+            List<Proveedor> lista = new List<Proveedor>();
+
+            try
+            {
+                using (SqlCommand cmd = new SqlCommand("sp_BuscarProveedorPorNombre", _connection))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@Nombre", nombre);
+
+                    if (_connection.State != ConnectionState.Open)
+                        _connection.Open();
+
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            lista.Add(new Proveedor
+                            {
+                                ProveedorID = Convert.ToInt32(reader["ProveedorID"]),
+                                Nombre = reader["Nombre"].ToString(),
+                                Contacto = reader["Contacto"]?.ToString()
+                            });
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error al buscar proveedor por nombre: " + ex.Message);
+            }
+            finally
+            {
+                if (_connection.State == ConnectionState.Open)
+                    _connection.Close();
+            }
+
+            return lista;
+        }
+
     }
 }
