@@ -6,7 +6,11 @@ using System.Threading.Tasks;
 
 namespace GestionFarmacia.Services
 {
-    class UsuarioService
+    public class UsuarioService
     {
+        public int UsuarioID { get; set; }
+        public string NombreUsuario { get; set; }
+        public string Contraseña { get; set; }
+        public string Rol { get; set; }
     }
 }
