@@ -40,66 +40,73 @@ namespace GestionFarmacia.Forms
             // lblInciar
             // 
             this.lblInciar.AutoSize = true;
-            this.lblInciar.Location = new System.Drawing.Point(318, 54);
+            this.lblInciar.Location = new System.Drawing.Point(238, 44);
+            this.lblInciar.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblInciar.Name = "lblInciar";
-            this.lblInciar.Size = new System.Drawing.Size(102, 16);
+            this.lblInciar.Size = new System.Drawing.Size(85, 13);
             this.lblInciar.TabIndex = 0;
             this.lblInciar.Text = "    Iniciar Sesión ";
-            this.lblInciar.Click += new System.EventHandler(this.lblInciar_Click);
+           
             // 
             // txtUsuario
             // 
-            this.txtUsuario.Location = new System.Drawing.Point(320, 131);
+            this.txtUsuario.Location = new System.Drawing.Point(240, 106);
+            this.txtUsuario.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.txtUsuario.Name = "txtUsuario";
-            this.txtUsuario.Size = new System.Drawing.Size(100, 22);
+            this.txtUsuario.Size = new System.Drawing.Size(76, 20);
             this.txtUsuario.TabIndex = 1;
             // 
             // txtContraseña
             // 
-            this.txtContraseña.Location = new System.Drawing.Point(321, 187);
+            this.txtContraseña.Location = new System.Drawing.Point(241, 152);
+            this.txtContraseña.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.txtContraseña.Name = "txtContraseña";
-            this.txtContraseña.Size = new System.Drawing.Size(100, 22);
+            this.txtContraseña.Size = new System.Drawing.Size(76, 20);
             this.txtContraseña.TabIndex = 2;
             // 
             // lblUsuario
             // 
             this.lblUsuario.AutoSize = true;
-            this.lblUsuario.Location = new System.Drawing.Point(251, 131);
+            this.lblUsuario.Location = new System.Drawing.Point(188, 106);
+            this.lblUsuario.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblUsuario.Name = "lblUsuario";
-            this.lblUsuario.Size = new System.Drawing.Size(54, 16);
+            this.lblUsuario.Size = new System.Drawing.Size(43, 13);
             this.lblUsuario.TabIndex = 3;
             this.lblUsuario.Text = "Usuario";
             // 
             // lblContraseña
             // 
             this.lblContraseña.AutoSize = true;
-            this.lblContraseña.Location = new System.Drawing.Point(229, 187);
+            this.lblContraseña.Location = new System.Drawing.Point(172, 152);
+            this.lblContraseña.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblContraseña.Name = "lblContraseña";
-            this.lblContraseña.Size = new System.Drawing.Size(76, 16);
+            this.lblContraseña.Size = new System.Drawing.Size(61, 13);
             this.lblContraseña.TabIndex = 4;
             this.lblContraseña.Text = "Contraseña";
             // 
             // btnIniciarSesion
             // 
-            this.btnIniciarSesion.Location = new System.Drawing.Point(309, 236);
+            this.btnIniciarSesion.Location = new System.Drawing.Point(232, 192);
+            this.btnIniciarSesion.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.btnIniciarSesion.Name = "btnIniciarSesion";
-            this.btnIniciarSesion.Size = new System.Drawing.Size(111, 23);
+            this.btnIniciarSesion.Size = new System.Drawing.Size(83, 19);
             this.btnIniciarSesion.TabIndex = 5;
-            this.btnIniciarSesion.Text = "iniciar sesión";
+            this.btnIniciarSesion.Text = "Iniciar Sesión";
             this.btnIniciarSesion.UseVisualStyleBackColor = true;
             this.btnIniciarSesion.Click += new System.EventHandler(this.btnIniciarSesion_Click);
             // 
             // FrmLogin
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(600, 366);
             this.Controls.Add(this.btnIniciarSesion);
             this.Controls.Add(this.lblContraseña);
             this.Controls.Add(this.lblUsuario);
             this.Controls.Add(this.txtContraseña);
             this.Controls.Add(this.txtUsuario);
             this.Controls.Add(this.lblInciar);
+            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.Name = "FrmLogin";
             this.Text = "FrmLogin";
             this.ResumeLayout(false);
