@@ -103,6 +103,8 @@ BEGIN
 END
 GO
 
+exec sp_insertarUsuario 'superman','123456','Administrador'
+
 -- SP Actualizar Usuario
 CREATE PROCEDURE sp_actualizarUsuario
 	@UsuarioID INT,
