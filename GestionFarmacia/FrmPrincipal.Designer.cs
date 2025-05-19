@@ -8,6 +8,15 @@ namespace GestionFarmacia
         /// </summary>
         private System.ComponentModel.IContainer components = null;
 
+        private System.Windows.Forms.Label lblUsuario;
+        private System.Windows.Forms.Button btnProductos;
+        private System.Windows.Forms.Button btnVentas;
+        private System.Windows.Forms.Label lblGestionFarmacia;
+        private System.Windows.Forms.Button btnProveedores;
+        private System.Windows.Forms.Button btnReportes;
+        private System.Windows.Forms.Button btnSalir;
+        private System.Windows.Forms.Button btnUsuarios;
+
         /// <summary>
         /// Limpiar los recursos que se estén usando.
         /// </summary>
@@ -114,11 +123,12 @@ namespace GestionFarmacia
             // 
             // btnUsuarios
             // 
+            this.btnUsuarios.BackColor = System.Drawing.SystemColors.Control;
             this.btnUsuarios.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnUsuarios.Location = new System.Drawing.Point(167, 152);
+            this.btnUsuarios.Location = new System.Drawing.Point(167, 153);
             this.btnUsuarios.Name = "btnUsuarios";
-            this.btnUsuarios.Size = new System.Drawing.Size(91, 35);
-            this.btnUsuarios.TabIndex = 7;
+            this.btnUsuarios.Size = new System.Drawing.Size(113, 35);
+            this.btnUsuarios.TabIndex = 0;
             this.btnUsuarios.Text = "Usuarios";
             this.btnUsuarios.UseVisualStyleBackColor = true;
             this.btnUsuarios.Click += new System.EventHandler(this.btnUsuarios_Click);
@@ -145,14 +155,6 @@ namespace GestionFarmacia
 
         #endregion
 
-        private System.Windows.Forms.Label lblUsuario;
-        private System.Windows.Forms.Button btnProductos;
-        private System.Windows.Forms.Button btnVentas;
-        private System.Windows.Forms.Label lblGestionFarmacia;
-        private System.Windows.Forms.Button btnProveedores;
-        private System.Windows.Forms.Button btnReportes;
-        private System.Windows.Forms.Button btnSalir;
-        private System.Windows.Forms.Button btnUsuarios;
     }
 }
 

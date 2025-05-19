@@ -27,7 +27,7 @@ namespace GestionFarmacia.Data.Repositories
                 SqlCommand cmd = new SqlCommand("sp_InsertarUsuario", _connection);
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.AddWithValue("@NombreUsuario", usuario.NombreUsuario);
-                cmd.Parameters.AddWithValue("@Contrasena", usuario.Contraseña);
+                cmd.Parameters.AddWithValue("@Contraseña", usuario.Contraseña);
                 cmd.Parameters.AddWithValue("@Rol", usuario.Rol);
 
                 if (_connection.State != ConnectionState.Open)
@@ -57,7 +57,7 @@ namespace GestionFarmacia.Data.Repositories
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.AddWithValue("@UsuarioID", usuario.UsuarioID);
                 cmd.Parameters.AddWithValue("@NombreUsuario", usuario.NombreUsuario);
-                cmd.Parameters.AddWithValue("@Contrasena", usuario.Contraseña);
+                cmd.Parameters.AddWithValue("@Contraseña", usuario.Contraseña);
                 cmd.Parameters.AddWithValue("@Rol", usuario.Rol);
 
                 if (_connection.State != ConnectionState.Open)
@@ -130,7 +130,7 @@ namespace GestionFarmacia.Data.Repositories
                     {
                         UsuarioID = Convert.ToInt32(reader["UsuarioID"]),
                         NombreUsuario = reader["NombreUsuario"].ToString(),
-                        Contraseña = reader["Contrasena"].ToString(),
+                        Contraseña = reader["Contraseña"].ToString(),
                         Rol = reader["Rol"].ToString()
                     };
                     lista.Add(usuario);

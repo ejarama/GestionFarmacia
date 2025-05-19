@@ -38,6 +38,7 @@ namespace GestionFarmacia
             _proveedorRepo = new ProveedorRepository();
 
             ConfigurarAccesoPorRol();
+            lblUsuario.Text = $"User: {_usuario} - {_rol}" ;
         }
 
         private void ConfigurarAccesoPorRol()
@@ -52,7 +53,7 @@ namespace GestionFarmacia
 
         private void btnUsuarios_Click(object sender, EventArgs e)
         {
-            var form = new FrmUsuarios();
+            var form = new FrmUsuarios(_usuarioRepo);
             form.ShowDialog();
         }
 
