@@ -4,6 +4,31 @@ GO
 USE FarmaciaDB;
 GO
 
+-- crear usuario para conexión a la bd
+-- Cambiar al contexto de la base de datos FarmaciaDB
+USE FarmaciaDB;
+GO
+
+-- Crear el rol personalizado db_executor
+CREATE ROLE db_executor;
+GO
+
+-- Otorgar permiso de ejecución de procedimientos almacenados
+GRANT EXECUTE TO db_executor;
+GO
+-- Crear un login en el servidor
+CREATE LOGIN usr_far WITH PASSWORD = 'Segura123!';
+GO
+
+-- Crear el usuario dentro de la base de datos
+CREATE USER usr_far FOR LOGIN usr_far;
+GO
+
+-- Asignar roles estándar (lectura, escritura, ejecución de SPs)
+EXEC sp_addrolemember 'db_datareader', 'usr_far';
+EXEC sp_addrolemember 'db_datawriter', 'usr_far';
+EXEC sp_addrolemember 'db_executor', 'usr_far'; -- solo si ya existe este rol personalizado
+GO
 
 
 -- Tabla de Usuarios
@@ -77,7 +102,6 @@ BEGIN
 	VALUES(@NombreUsuario, @Contraseña, @Rol)
 END
 GO
-
 
 -- SP Actualizar Usuario
 CREATE PROCEDURE sp_actualizarUsuario
@@ -548,5 +572,24 @@ BEGIN
         -- Manejo de errores
         THROW;
     END CATCH
+END
+GO
+
+CREATE PROCEDURE sp_BuscarProveedorPorNombre
+    @Nombre VARCHAR(100)
+AS
+BEGIN
+    SELECT * FROM Proveedores
+    WHERE Nombre LIKE '%' + @Nombre + '%'
+END
+GO
+
+CREATE PROCEDURE sp_ObtenerUsuarioPorNombre
+    @NombreUsuario VARCHAR(50)
+AS
+BEGIN
+    SELECT UsuarioID, NombreUsuario, Contraseña, Rol
+    FROM Usuarios
+    WHERE NombreUsuario = @NombreUsuario;
 END
 GO
