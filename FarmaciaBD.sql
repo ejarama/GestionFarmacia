@@ -104,6 +104,9 @@ END
 GO
 
 exec sp_insertarUsuario 'superman','123456','Administrador'
+GO
+
+select * from Usuarios
 
 -- SP Actualizar Usuario
 CREATE PROCEDURE sp_actualizarUsuario
@@ -130,21 +133,24 @@ BEGIN
 END
 GO
 
--- SP Consultar Usuario Por Id
-CREATE PROCEDURE sp_ConsultarUsuarioPorId
-	@UsuarioID INT
+CREATE PROCEDURE sp_ConsultarUsuario
+    @UsuarioID INT = NULL
 AS
 BEGIN
-	SELECT UsuarioID, NombreUsuario, Contraseña, Rol FROM Usuarios WHERE UsuarioID = @UsuarioID;
+    IF @UsuarioID IS NULL
+    BEGIN
+        SELECT UsuarioID, NombreUsuario, Contraseña, Rol
+        FROM Usuarios;
+    END
+    ELSE
+    BEGIN
+        SELECT UsuarioID, NombreUsuario, Contraseña, Rol
+        FROM Usuarios
+        WHERE UsuarioID = @UsuarioID;
+    END
 END
 GO
 
--- SP Consultar todos los usuarios
-
-CREATE PROCEDURE sp_ConsultarUsuariosTodos
-AS
-SELECT UsuarioID, NombreUsuario, Contraseña, Rol FROM Usuarios;
-GO
 
 
 -- SP Insertar Producto
