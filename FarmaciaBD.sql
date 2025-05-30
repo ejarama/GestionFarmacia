@@ -325,11 +325,14 @@ GO
 CREATE PROCEDURE sp_InsertarVenta
     @UsuarioID INT,
     @FechaVenta DATETIME,
-    @TotalVenta DECIMAL(10,2)
+    @TotalVenta DECIMAL(18, 2),
+    @VentaID INT OUTPUT
 AS
 BEGIN
     INSERT INTO Ventas (UsuarioID, FechaVenta, TotalVenta)
     VALUES (@UsuarioID, @FechaVenta, @TotalVenta);
+
+    SET @VentaID = SCOPE_IDENTITY();
 END
 GO
 
@@ -388,18 +391,46 @@ BEGIN
 END
 GO
 
+CREATE PROCEDURE SP_ConsultarVenta
+    @VentaID INT
+AS
+BEGIN
+    SELECT VentaID, UsuarioID, FechaVenta, TotalVenta
+    FROM Ventas
+    WHERE VentaID = @VentaID
+END
+
+
 -- SP Insertar DetalleVenta
 CREATE PROCEDURE sp_InsertarDetalleVenta
     @VentaID INT,
     @ProductoID INT,
     @Cantidad INT,
-    @PrecioUnitario DECIMAL(10,2)
+    @PrecioUnitario DECIMAL(18, 2)
 AS
 BEGIN
     INSERT INTO DetalleVenta (VentaID, ProductoID, Cantidad, PrecioUnitario)
     VALUES (@VentaID, @ProductoID, @Cantidad, @PrecioUnitario);
 END
 GO
+
+--SP ActualizarStockProducto
+
+CREATE PROCEDURE sp_ActualizarStockProducto
+    @ProductoID INT,
+    @CantidadVendida INT,
+    @NuevoStock INT OUTPUT
+AS
+BEGIN
+    UPDATE Productos
+    SET CantidadStock = CantidadStock - @CantidadVendida
+    WHERE ProductoID = @ProductoID;
+
+    SELECT @NuevoStock = CantidadStock FROM Productos WHERE ProductoID = @ProductoID;
+END
+GO
+
+
 
 -- SP Actualizar DetalleVenta
 CREATE PROCEDURE sp_ActualizarDetalleVenta
@@ -428,12 +459,16 @@ END
 GO
 
 -- SP Consultar DetalleVenta
-CREATE PROCEDURE sp_ConsultarDetalleVenta
+CREATE PROCEDURE SP_ConsultarDetalleVenta
+    @VentaID INT
 AS
 BEGIN
-    SELECT * FROM DetalleVenta;
+    SELECT dv.ProductoID, p.Nombre AS NombreProducto, dv.Cantidad, dv.PrecioUnitario
+    FROM DetalleVenta dv
+    INNER JOIN Productos p ON dv.ProductoID = p.ProductoID
+    WHERE dv.VentaID = @VentaID
 END
-GO
+
 
 -- SP Consultar DetalleVenta Por VentaID
 CREATE PROCEDURE sp_ConsultarDetalleVentaPorVentaID

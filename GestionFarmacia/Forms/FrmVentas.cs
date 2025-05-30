@@ -1,4 +1,7 @@
-﻿using System;
+﻿using GestionFarmacia.Data.Repositories;
+using GestionFarmacia.Entities;
+using GestionFarmacia.Utils;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -12,9 +15,176 @@ namespace GestionFarmacia.Forms
 {
     public partial class FrmVentas : Form
     {
-        public FrmVentas()
+        private List<DetalleVenta> detalleVenta = new List<DetalleVenta>();
+        private Usuario _usuario;
+
+        public FrmVentas(Usuario usuario)
         {
             InitializeComponent();
+            _usuario = usuario;
+
+            lblUsuario.Text = $"Usuario: {_usuario.NombreUsuario}";
+            lblFecha.Text = $"Fecha: {DateTime.Now:dd/MM/yyyy}";
+
+            CargarProductos();
         }
+
+
+        private void btnRegistrarVenta_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (detalleVenta.Count == 0)
+                {
+                    MessageBox.Show("No hay productos en la venta.");
+                    return;
+                }
+
+                Venta venta = VentaFactory.CrearVenta(_usuario.UsuarioID, detalleVenta);
+
+                var unitOfWork = new UnitOfWork(); // Implementaremos después
+                bool exito = unitOfWork.RegistrarVenta(venta);
+
+                if (exito)
+                {
+                    MessageBox.Show("Venta registrada con éxito.");
+                    LimpiarFormulario();
+                }
+                else
+                {
+                    MessageBox.Show("Ocurrió un error al registrar la venta.");
+                }
+            }
+            catch (Exception ex)
+            {
+                ManejadorErrores.Mostrar(ex);
+            }
+        }
+
+
+        private void btnAgregar_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (cmbProducto.SelectedItem == null)
+                {
+                    MessageBox.Show("Selecciona un producto.");
+                    return;
+                }
+
+                if (!int.TryParse(txtCantidad.Text, out int cantidad) || cantidad <= 0)
+                {
+                    MessageBox.Show("Cantidad inválida.");
+                    return;
+                }
+
+                var producto = (Producto)cmbProducto.SelectedItem;
+
+                if (cantidad > producto.CantidadStock)
+                {
+                    MessageBox.Show("No hay suficiente stock disponible.");
+                    return;
+                }
+
+                var existente = detalleVenta.Find(d => d.ProductoID == producto.ProductoID);
+                if (existente != null)
+                {
+                    existente.Cantidad += cantidad;
+                }
+                else
+                {
+                    detalleVenta.Add(new DetalleVenta
+                    {
+                        ProductoID = producto.ProductoID,
+                        NombreProducto = producto.Nombre,
+                        Cantidad = cantidad,
+                        PrecioUnitario = producto.Precio
+                    });
+                }
+
+                ActualizarDetalle();
+                txtCantidad.Clear();
+                cmbProducto.SelectedIndex = -1;
+            }
+            catch (Exception ex)
+            {
+                ManejadorErrores.Mostrar(ex);
+            }
+        }
+
+
+        private void ActualizarDetalle()
+        {
+            try
+            {
+                dgvDetalleVenta.DataSource = null;
+                dgvDetalleVenta.DataSource = detalleVenta;
+
+                decimal total = 0;
+                foreach (var item in detalleVenta)
+                    total += item.Subtotal;
+
+                lblTotal.Text = $"Total: ${total:F2}";
+            }
+            catch (Exception ex)
+            {
+                ManejadorErrores.Mostrar(ex);
+            }
+        }
+
+
+        private void LimpiarFormulario()
+        {
+            try
+            {
+                detalleVenta.Clear();
+                ActualizarDetalle();
+                cmbProducto.SelectedIndex = -1;
+                txtCantidad.Clear();
+                lblTotal.Text = "Total: $0.00";
+            }
+            catch (Exception ex)
+            {
+                ManejadorErrores.Mostrar(ex);
+            }
+        }
+
+        private void dgvDetalleVenta_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            try
+            {
+                if (e.RowIndex >= 0 && dgvDetalleVenta.Columns[e.ColumnIndex].Name == "Eliminar")
+                {
+                    int productoID = (int)dgvDetalleVenta.Rows[e.RowIndex].Cells["ProductoID"].Value;
+                    detalleVenta.RemoveAll(d => d.ProductoID == productoID);
+                    ActualizarDetalle();
+                }
+            }
+            catch (Exception ex)
+            {
+                ManejadorErrores.Mostrar(ex);
+            }
+        }
+
+
+        private void CargarProductos()
+        {
+            try
+            {
+                var productoRepo = new ProductoRepository(); // o inyectado si prefieres
+                var productos = productoRepo.ObtenerTodos();
+
+                cmbProducto.DataSource = productos;
+                cmbProducto.DisplayMember = "Nombre";
+                cmbProducto.ValueMember = "ProductoID";
+                cmbProducto.SelectedIndex = -1;
+            }
+            catch (Exception ex)
+            {
+                ManejadorErrores.Mostrar(ex);
+            }
+        }
+
+
     }
 }

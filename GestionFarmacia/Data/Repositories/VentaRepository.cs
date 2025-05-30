@@ -89,6 +89,8 @@ namespace GestionFarmacia.Data
         {
             try
             {
+                Venta venta = null;
+
                 using (SqlConnection conn = new SqlConnection(_connectionString))
                 using (SqlCommand cmd = new SqlCommand("SP_ConsultarVenta", conn))
                 {
@@ -100,23 +102,51 @@ namespace GestionFarmacia.Data
                     {
                         if (reader.Read())
                         {
-                            return new Venta
+                            venta = new Venta
                             {
                                 VentaID = Convert.ToInt32(reader["VentaID"]),
                                 UsuarioID = Convert.ToInt32(reader["UsuarioID"]),
                                 FechaVenta = Convert.ToDateTime(reader["FechaVenta"]),
-                                TotalVenta = Convert.ToDecimal(reader["TotalVenta"])
+                                TotalVenta = Convert.ToDecimal(reader["TotalVenta"]),
+                                Detalles = new List<DetalleVenta>()
                             };
                         }
                     }
+
+                    // Si la venta existe, consultar los detalles
+                    if (venta != null)
+                    {
+                        using (SqlCommand cmdDetalle = new SqlCommand("SP_ConsultarDetalleVenta", conn))
+                        {
+                            cmdDetalle.CommandType = CommandType.StoredProcedure;
+                            cmdDetalle.Parameters.AddWithValue("@VentaID", ventaId);
+
+                            using (SqlDataReader reader = cmdDetalle.ExecuteReader())
+                            {
+                                while (reader.Read())
+                                {
+                                    venta.Detalles.Add(new DetalleVenta
+                                    {
+                                        ProductoID = Convert.ToInt32(reader["ProductoID"]),
+                                        NombreProducto = reader["NombreProducto"].ToString(),
+                                        Cantidad = Convert.ToInt32(reader["Cantidad"]),
+                                        PrecioUnitario = Convert.ToDecimal(reader["PrecioUnitario"])
+                                    });
+                                }
+                            }
+                        }
+                    }
+
                 }
-                return null;
+
+                return venta;
             }
             catch (Exception ex)
             {
-                throw new Exception("Error al obtener la venta por ID.", ex);
+                throw new Exception("Error al obtener la venta por ID con detalles.", ex);
             }
         }
+
 
         public List<Venta> ObtenerTodos()
         {
