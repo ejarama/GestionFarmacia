@@ -31,5 +31,24 @@ namespace GestionFarmacia.Utils
 
             return string.IsNullOrEmpty(mensaje);
         }
+
+        public static bool ValidarLogin(string nombreUsuario, string contrasena, out string mensaje)
+        {
+            mensaje = string.Empty;
+
+            if (string.IsNullOrWhiteSpace(nombreUsuario))
+            {
+                mensaje = "El campo de usuario es obligatorio.";
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(contrasena))
+            {
+                mensaje = "El campo de contraseña es obligatorio.";
+                return false;
+            }
+
+            return true;
+        }
     }
 }

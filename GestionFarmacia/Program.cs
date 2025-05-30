@@ -6,6 +6,7 @@ using System.Windows.Forms;
 using GestionFarmacia.Forms;
 using GestionFarmacia.Data.Repositories;
 using GestionFarmacia.Data.Interfaces;
+using GestionFarmacia.Entities;
 
 namespace GestionFarmacia
 {
@@ -19,17 +20,20 @@ namespace GestionFarmacia
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+
             IUsuarioRepository usuarioRepo = new UsuarioRepository();
             FrmLogin login = new FrmLogin(usuarioRepo);
 
             if (login.ShowDialog() == DialogResult.OK)
             {
-                Application.Run(new FrmPrincipal(login.NombreUsuario, login.RolUsuario));
+                Usuario usuario = login.UsuarioAutenticado;
+                Application.Run(new FrmPrincipal(usuario)); 
             }
             else
             {
                 Application.Exit();
             }
+
         }
     }
 }

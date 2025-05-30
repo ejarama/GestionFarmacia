@@ -11,46 +11,50 @@ using Farmacia.Data.Repositories;
 using GestionFarmacia.Data;
 using GestionFarmacia.Data.Interfaces;
 using GestionFarmacia.Data.Repositories;
+using GestionFarmacia.Entities;
 using GestionFarmacia.Forms;
 using GestionFarmacia.Presentation;
 using GestionFarmacia.Services;
+using GestionFarmacia.Utils;
 
 namespace GestionFarmacia
 {
     public partial class FrmPrincipal : Form
     {
-        private readonly string _rol;
-        private readonly string _usuario;
-
+       
         // Puedes pasar los repositorios si usas DI o los puedes instanciar aquí si es simple
         private readonly IUsuarioRepository _usuarioRepo;
         private readonly IProductoRepository _productoRepo;
         private readonly IProveedorRepository _proveedorRepo;
 
-        public FrmPrincipal(string usuario, string rol)
+        private readonly Usuario _usuario;
+       
+
+        public FrmPrincipal(Usuario usuario)
         {
             InitializeComponent();
             _usuario = usuario;
-            _rol = rol;
 
-            // Instanciar repositorios
             _usuarioRepo = new UsuarioRepository();
             _productoRepo = new ProductoRepository();
             _proveedorRepo = new ProveedorRepository();
 
             ConfigurarAccesoPorRol();
-            lblUsuario.Text = $"User: {_usuario} - {_rol}" ;
+            lblUsuario.Text = $"User: {_usuario.NombreUsuario} - {_usuario.Rol}";
         }
+
 
         private void ConfigurarAccesoPorRol()
         {
-            // Control de visibilidad según el rol del usuario
-            btnUsuarios.Enabled = _rol == "Administrador";
-            btnReportes.Enabled = _rol == "Administrador" || _rol == "Almacenero";
-            btnProveedores.Enabled = _rol == "Administrador" || _rol == "Almacenero";
-            btnProductos.Enabled = _rol == "Administrador" || _rol == "Almacenero";
-            btnVentas.Enabled = _rol == "Administrador" || _rol == "Vendedor";
+            string rol = _usuario.Rol;
+
+            btnUsuarios.Enabled = RolPermisos.PuedeAccederUsuarios(rol);
+            btnReportes.Enabled = RolPermisos.PuedeAccederReportes(rol);
+            btnProveedores.Enabled = RolPermisos.PuedeAccederProveedores(rol);
+            btnProductos.Enabled = RolPermisos.PuedeAccederProductos(rol);
+            btnVentas.Enabled = RolPermisos.PuedeAccederVentas(rol);
         }
+
 
         private void btnUsuarios_Click(object sender, EventArgs e)
         {
@@ -79,7 +83,7 @@ namespace GestionFarmacia
 
         private void btnVentas_Click(object sender, EventArgs e)
         {
-            var form = new FrmVentas(); // Si necesitas pasar el nombre del usuario que realiza la venta
+            var form = new FrmVentas(_usuario); // Pasas el objeto completo
             form.ShowDialog();
         }
 

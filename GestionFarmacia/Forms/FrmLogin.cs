@@ -10,12 +10,14 @@ using System.Windows.Forms;
 using GestionFarmacia.Data;
 using GestionFarmacia.Data.Repositories;
 using GestionFarmacia.Entities;
+using GestionFarmacia.Utils;
 
 namespace GestionFarmacia.Forms
 {
     public partial class FrmLogin : Form
     {
         private readonly IUsuarioRepository _usuarioRepo;
+        public Usuario UsuarioAutenticado { get; private set; }
 
         public string NombreUsuario { get; private set; }
         public string RolUsuario { get; private set; }
@@ -32,19 +34,18 @@ namespace GestionFarmacia.Forms
                 string usuarioIngresado = txtUsuario.Text.Trim();
                 string claveIngresada = txtContraseña.Text;
 
-                if (string.IsNullOrWhiteSpace(usuarioIngresado) || string.IsNullOrWhiteSpace(claveIngresada))
+                if (!ValidadorEntradas.ValidarLogin(usuarioIngresado, claveIngresada, out string mensaje))
                 {
-                    MessageBox.Show("Por favor, ingresa usuario y contraseña.", "Campos obligatorios", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show(mensaje, "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
 
-                    Usuario usuario = _usuarioRepo.ObtenerPorNombreUsuario(usuarioIngresado);
+
+                Usuario usuario = _usuarioRepo.ObtenerPorNombreUsuario(usuarioIngresado);
 
                 if (usuario != null && usuario.Contraseña == claveIngresada)
                 {
-                    NombreUsuario = usuario.NombreUsuario;
-                    RolUsuario = usuario.Rol;
-
+                    UsuarioAutenticado = usuario; 
                     this.DialogResult = DialogResult.OK;
                     this.Close();
                 }
