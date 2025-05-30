@@ -1,159 +1,223 @@
-﻿using Data.Repositories;
-using GestionFarmacia.Data;
-using GestionFarmacia.Entities;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System;
 using System.Windows.Forms;
+using GestionFarmacia.Entities;
+using GestionFarmacia.Services;
+using GestionFarmacia.Utils;
+using GestionFarmacia.Data.Interfaces;
+using System.Collections.Generic;
+using GestionFarmacia.Utils;
+using GestionFarmacia.Services.Interfaces;
 
 namespace GestionFarmacia.Forms
 {
     public partial class FrmProductos : Form
     {
-        private readonly IProductoRepository _repo;
-        private int productoSeleccionadoId = -1;
+        private readonly IProductoService _productoService;
+        private readonly IProveedorRepository _proveedorRepo; 
+        private int? productoSeleccionadoId = null;
 
-        public FrmProductos()
+        public FrmProductos(IProductoService productoService, IProveedorRepository proveedorRepo)
         {
             InitializeComponent();
-            _repo = new ProductoRepository();
+            _productoService = productoService;
+            _proveedorRepo = proveedorRepo;
+
             CargarProductos();
+            CargarProveedores();
         }
+
 
         private void CargarProductos()
         {
             dgvProductos.DataSource = null;
-            dgvProductos.DataSource = _repo.ObtenerTodos();
+            dgvProductos.DataSource = _productoService.ObtenerProductos();
+            dgvProductos.ClearSelection();
         }
 
-        private void LimpiarCampos()
+        private void CargarProveedores()
         {
-            txtNombre.Clear();
-            txtDescripcion.Clear();
-            numPrecio.Value = 0;
-            numMinimo.Value = 0;
-            productoSeleccionadoId = -1;
+            var proveedores = _proveedorRepo.Consultar();
+            clbProveedores.Items.Clear();
+
+            foreach (var p in proveedores)
+                clbProveedores.Items.Add(p); // Agrega solo el objeto
+
+            clbProveedores.DisplayMember = "Nombre"; // Asegura que se muestre el nombre
         }
 
-        private Producto ObtenerProductoDesdeFormulario()
+        private void btnRegistrar_Click(object sender, EventArgs e)
         {
-            return new Producto
+            try
             {
-                ProductoID = productoSeleccionadoId,
-                Nombre = txtNombre.Text.Trim(),
-                Descripcion = txtDescripcion.Text.Trim(),
-                Precio = numPrecio.Value,
-                CantidadStock = (int)numMinimo.Value
-            };
+                var producto = ObtenerProductoFormulario();
+
+                if (!ValidadorEntradas.ValidarProducto(producto, out string mensaje))
+                {
+                    MessageBox.Show(mensaje, "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+
+                _productoService.RegistrarProducto(producto);
+
+                var nuevo = _productoService.ObtenerPorNombre(producto.Nombre);
+                var proveedores = ObtenerProveedoresSeleccionados();
+                if (proveedores.Count == 0)
+                {
+                    MessageBox.Show("Debes seleccionar al menos un proveedor.", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+                _productoService.AsignarProveedoresAProducto(nuevo.ProductoID, proveedores);
+
+                MessageBox.Show("Producto registrado correctamente.");
+                LimpiarFormulario();
+                CargarProductos();
+
+            }
+            catch (Exception ex)
+            {
+                ManejadorErrores.Mostrar(ex);
+            }
         }
 
-        private void btnGuardar_Click(object sender, EventArgs e)
+        private void btnActualizar_Click(object sender, EventArgs e)
         {
-            Producto p = ObtenerProductoDesdeFormulario();
-
-            if (string.IsNullOrEmpty(p.Nombre))
+            if (!productoSeleccionadoId.HasValue)
             {
-                MessageBox.Show("El nombre es obligatorio.");
+                MessageBox.Show("Selecciona un producto para actualizar.");
                 return;
             }
 
-            _repo.Insertar(p);
-            CargarProductos();
-            LimpiarCampos();
-            MessageBox.Show("Producto guardado correctamente.");
-        }
-
-        private void btnModificar_Click(object sender, EventArgs e)
-        {
-            if (productoSeleccionadoId == -1)
+            try
             {
-                MessageBox.Show("Debe seleccionar un producto para modificar.");
-                return;
+                var producto = ObtenerProductoFormulario();
+                producto.ProductoID = productoSeleccionadoId.Value;
+
+                if (!ValidadorEntradas.ValidarProducto(producto, out string mensaje))
+                {
+                    MessageBox.Show(mensaje, "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+
+                _productoService.ActualizarProducto(producto);
+                var proveedores = ObtenerProveedoresSeleccionados();
+               
+                _productoService.AsignarProveedoresAProducto(producto.ProductoID, proveedores);
+
+                MessageBox.Show("Producto actualizado.");
+                LimpiarFormulario();
+                CargarProductos();
             }
-
-            Producto p = ObtenerProductoDesdeFormulario();
-            _repo.Actualizar(p);
-            CargarProductos();
-            LimpiarCampos();
-            MessageBox.Show("Producto actualizado.");
-        }
-
-
-        private void FrmProductos_Load(object sender, EventArgs e)
-        {
-
+            catch (Exception ex)
+            {
+                ManejadorErrores.Mostrar(ex);
+            }
         }
 
         private void btnEliminar_Click(object sender, EventArgs e)
         {
+            if (!productoSeleccionadoId.HasValue)
             {
-                if (productoSeleccionadoId == -1)
-                {
-                    MessageBox.Show("Seleccione un producto para eliminar.");
-                    return;
-                }
-
-                var confirm = MessageBox.Show("¿Está seguro de eliminar el producto?", "Confirmar", MessageBoxButtons.YesNo);
-                if (confirm == DialogResult.Yes)
-                {
-                    _repo.Eliminar(productoSeleccionadoId);
-                    CargarProductos();
-                    LimpiarCampos();
-                    MessageBox.Show("Producto eliminado.");
-                }
-            }
-
-        }
-
-        private void btnBuscar_Click(object sender, EventArgs e)
-        {
-            if (dgvProductos.CurrentRow != null)
-            {
-                var producto = (Producto)dgvProductos.CurrentRow.DataBoundItem;
-
-                productoSeleccionadoId = producto.ProductoID;
-                txtNombre.Text = producto.Nombre;
-                txtDescripcion.Text = producto.Descripcion;
-                numPrecio.Value = producto.Precio;
-                numMinimo.Value = producto.CantidadStock;
-            }
-        }
-
-        private void btnGuardar_Click_1(object sender, EventArgs e)
-        {
-            Producto p = ObtenerProductoDesdeFormulario();
-
-            if (string.IsNullOrEmpty(p.Nombre))
-            {
-                MessageBox.Show("El nombre es obligatorio.");
+                MessageBox.Show("Selecciona un producto para eliminar.");
                 return;
             }
 
-            _repo.Insertar(p);
-            CargarProductos();
-            LimpiarCampos();
-            MessageBox.Show("Producto guardado correctamente.");
-        }
+            var confirm = MessageBox.Show("¿Seguro que deseas eliminar este producto?", "Confirmar", MessageBoxButtons.YesNo);
+            if (confirm != DialogResult.Yes) return;
 
-        private void btnModificar_Click_1(object sender, EventArgs e)
-        {
-            if (productoSeleccionadoId == -1)
+            try
             {
-                MessageBox.Show("Debe seleccionar un producto para modificar.");
-                return;
+                _productoService.EliminarProducto(productoSeleccionadoId.Value);
+                MessageBox.Show("Producto eliminado.");
+                LimpiarFormulario();
+                CargarProductos();
             }
-
-            Producto p = ObtenerProductoDesdeFormulario();
-            _repo.Actualizar(p);
-            CargarProductos();
-            LimpiarCampos();
-            MessageBox.Show("Producto actualizado.");
+            catch (Exception ex)
+            {
+                ManejadorErrores.Mostrar(ex);
+            }
         }
 
+
+        private void dgvProductos_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex >= 0)
+            {
+                var fila = dgvProductos.Rows[e.RowIndex];
+
+                productoSeleccionadoId = Convert.ToInt32(fila.Cells["ProductoID"].Value);
+                txtNombre.Text = fila.Cells["Nombre"].Value.ToString();
+                txtDescripcion.Text = fila.Cells["Descripcion"].Value.ToString();
+                txtPrecio.Text = fila.Cells["Precio"].Value.ToString();
+                txtCantidad.Text = fila.Cells["CantidadStock"].Value.ToString();
+                txtStockMinimo.Text = fila.Cells["StockMinimo"].Value.ToString();
+                txtNombre.Enabled = false;
+
+                // Marcar proveedores asociados
+                MarcarProveedoresAsociados(productoSeleccionadoId.Value);
+            }
+        }
+
+        private void MarcarProveedoresAsociados(int productoId)
+        {
+            // 1. Obtener IDs asociados al producto
+            var asociados = _productoService.ObtenerProveedoresPorProducto(productoId);
+
+            // 2. Recorrer los ítems del CheckedListBox
+            for (int i = 0; i < clbProveedores.Items.Count; i++)
+            {
+                var proveedor = (Proveedor)clbProveedores.Items[i];
+                bool estaAsociado = asociados.Contains(proveedor.ProveedorID);
+                clbProveedores.SetItemChecked(i, estaAsociado);
+            }
+        }
+
+
+        private void btnLimpiar_Click(object sender, EventArgs e)
+        {
+            LimpiarFormulario();
+        }
+
+        private Producto ObtenerProductoFormulario()
+        {
+            return new Producto
+            {
+                Nombre = txtNombre.Text.Trim(),
+                Descripcion = txtDescripcion.Text.Trim(),
+                Precio = decimal.TryParse(txtPrecio.Text, out var p) ? p : 0,
+                CantidadStock = int.TryParse(txtCantidad.Text, out var c) ? c : 0,
+                StockMinimo = int.TryParse(txtStockMinimo.Text, out var m) ? m : 0
+            };
+        }
+
+        private List<int> ObtenerProveedoresSeleccionados()
+        {
+            var lista = new List<int>();
+            foreach (var item in clbProveedores.CheckedItems)
+            {
+                var proveedor = (Proveedor)item;
+                lista.Add(proveedor.ProveedorID);
+            }
+            return lista;
+        }
+
+
+        private void LimpiarFormulario()
+        {
+            productoSeleccionadoId = null;
+            txtNombre.Enabled = true;
+            txtNombre.Clear();
+            txtDescripcion.Clear();
+            txtPrecio.Clear();
+            txtCantidad.Clear();
+            txtStockMinimo.Clear();
+            clbProveedores.ClearSelected();
+            for (int i = 0; i < clbProveedores.Items.Count; i++)
+                clbProveedores.SetItemChecked(i, false);
+            dgvProductos.ClearSelection();
+        }
+
+      
     }
 }

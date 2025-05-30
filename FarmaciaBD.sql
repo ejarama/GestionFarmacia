@@ -188,7 +188,7 @@ END
 GO
 
 -- SP Borrar Producto
-CREATE PROCEDURE sp_BorrarProducto
+CREATE PROCEDURE sp_EliminarProducto
     @ProductoID INT
 AS
 BEGIN
@@ -212,6 +212,52 @@ BEGIN
     END
 END
 GO
+
+CREATE PROCEDURE sp_ObtenerProductoPorID
+    @ProductoID INT
+AS
+BEGIN
+    SELECT ProductoID, Nombre, Descripcion, Precio, CantidadStock, StockMinimo
+    FROM Productos
+    WHERE ProductoID = @ProductoID;
+END
+GO
+
+CREATE PROCEDURE sp_ObtenerProductoPorNombre
+    @Nombre NVARCHAR(100)
+AS
+BEGIN
+    SELECT ProductoID, Nombre, Descripcion, Precio, CantidadStock, StockMinimo
+    FROM Productos
+    WHERE Nombre = @Nombre;
+END
+GO
+
+CREATE PROCEDURE sp_ObtenerTodosProductos
+AS
+BEGIN
+    SELECT ProductoID, Nombre, Descripcion, Precio, CantidadStock, StockMinimo
+    FROM Productos;
+END
+GO
+
+
+CREATE PROCEDURE sp_AsignarProveedorAProducto
+    @ProductoID INT,
+    @ProveedorID INT
+AS
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM ProveedorProducto
+        WHERE ProductoID = @ProductoID AND ProveedorID = @ProveedorID
+    )
+    BEGIN
+        INSERT INTO ProveedorProducto (ProductoID, ProveedorID)
+        VALUES (@ProductoID, @ProveedorID);
+    END
+END
+GO
+
 
 -- SP Insertar Proveedor
 CREATE PROCEDURE sp_InsertarProveedor
@@ -561,27 +607,7 @@ END
 GO
 
 
-CREATE PROCEDURE sp_AsignarProveedorAProducto
-    @ProductoID INT,
-    @ProveedorID INT
-AS
-BEGIN
-    BEGIN TRY
-        IF NOT EXISTS (
-            SELECT 1 FROM ProveedorProducto
-            WHERE ProductoID = @ProductoID AND ProveedorID = @ProveedorID
-        )
-        BEGIN
-            INSERT INTO ProveedorProducto (ProveedorID, ProductoID)
-            VALUES (@ProveedorID, @ProductoID);
-        END
-    END TRY
-    BEGIN CATCH
-        -- Manejo de errores
-        THROW;
-    END CATCH
-END
-GO
+
 
 CREATE PROCEDURE sp_BuscarProveedorPorNombre
     @Nombre VARCHAR(100)
@@ -599,5 +625,35 @@ BEGIN
     SELECT UsuarioID, NombreUsuario, Contraseña, Rol
     FROM Usuarios
     WHERE NombreUsuario = @NombreUsuario;
+END
+GO
+
+CREATE PROCEDURE sp_EliminarProveedorDeProducto
+    @ProductoID INT,
+    @ProveedorID INT
+AS
+BEGIN
+    DELETE FROM ProveedorProducto
+    WHERE ProductoID = @ProductoID AND ProveedorID = @ProveedorID;
+END
+GO
+
+CREATE PROCEDURE sp_ObtenerProveedoresPorProducto
+    @ProductoID INT
+AS
+BEGIN
+    SELECT ProveedorID
+    FROM ProveedorProducto
+    WHERE ProductoID = @ProductoID;
+END
+GO
+
+CREATE PROCEDURE sp_ObtenerProductosPorProveedor
+    @ProveedorID INT
+AS
+BEGIN
+    SELECT ProductoID
+    FROM ProveedorProducto
+    WHERE ProveedorID = @ProveedorID;
 END
 GO

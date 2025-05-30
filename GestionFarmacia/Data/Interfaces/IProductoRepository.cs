@@ -5,7 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using GestionFarmacia.Entities;
 
-namespace GestionFarmacia.Data
+
+namespace GestionFarmacia.Data.Interfaces
 {
     public interface IProductoRepository
     {
@@ -13,6 +14,8 @@ namespace GestionFarmacia.Data
         void Actualizar(Producto producto);
         void Eliminar(int productoID);
         Producto ObtenerPorID(int productoID);
+        Producto ObtenerPorNombre(string nombre);
         List<Producto> ObtenerTodos();
     }
 }
+

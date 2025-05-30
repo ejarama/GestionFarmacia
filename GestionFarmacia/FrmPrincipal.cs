@@ -7,12 +7,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Data.Repositories;
+using Farmacia.Data.Repositories;
 using GestionFarmacia.Data;
 using GestionFarmacia.Data.Interfaces;
 using GestionFarmacia.Data.Repositories;
 using GestionFarmacia.Forms;
 using GestionFarmacia.Presentation;
+using GestionFarmacia.Services;
 
 namespace GestionFarmacia
 {
@@ -59,8 +60,15 @@ namespace GestionFarmacia
 
         private void btnProductos_Click(object sender, EventArgs e)
         {
-            var form = new FrmProductos();
-            form.ShowDialog();
+            var productoRepo = new ProductoRepository();
+            var proveedorRepo = new ProveedorRepository();
+            var proveedorProductoRepo = new ProveedorProductoRepository();
+
+            var productoService = new ProductoService(productoRepo, proveedorProductoRepo);
+
+            FrmProductos frm = new FrmProductos(productoService, proveedorRepo);
+            frm.ShowDialog();
+
         }
 
         private void btnProveedores_Click(object sender, EventArgs e)

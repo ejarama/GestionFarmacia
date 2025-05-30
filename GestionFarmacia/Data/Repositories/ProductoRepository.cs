@@ -3,44 +3,40 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using GestionFarmacia.Entities;
-using GestionFarmacia.Data;
+using GestionFarmacia.Data.Interfaces;
 
-namespace Data.Repositories
+
+namespace GestionFarmacia.Data.Repositories
 {
     public class ProductoRepository : IProductoRepository
     {
-       
-        private readonly SqlConnection _connectionString;
+        private readonly SqlConnection _connection;
 
         public ProductoRepository()
         {
-            _connectionString = DatabaseConnection.Instance.GetConnection();
+            _connection = DatabaseConnection.Instance.GetConnection();
         }
 
         public void Insertar(Producto producto)
         {
             try
             {
-               
-                using (SqlCommand cmd = new SqlCommand("SP_InsertarProducto", _connectionString))
+                using (SqlCommand cmd = new SqlCommand("sp_InsertarProducto", _connection))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
-
                     cmd.Parameters.AddWithValue("@Nombre", producto.Nombre);
                     cmd.Parameters.AddWithValue("@Descripcion", producto.Descripcion);
                     cmd.Parameters.AddWithValue("@Precio", producto.Precio);
                     cmd.Parameters.AddWithValue("@CantidadStock", producto.CantidadStock);
                     cmd.Parameters.AddWithValue("@StockMinimo", producto.StockMinimo);
 
-                    if (_connectionString.State != ConnectionState.Open)
-                        _connectionString.Open();
-
+                    AbrirConexion();
                     cmd.ExecuteNonQuery();
                 }
             }
-            catch (Exception ex)
+            finally
             {
-                throw new Exception("Error al insertar el producto.", ex);
+                CerrarConexion();
             }
         }
 
@@ -48,11 +44,9 @@ namespace Data.Repositories
         {
             try
             {
-                
-                using (SqlCommand cmd = new SqlCommand("SP_ActualizarProducto", _connectionString))
+                using (SqlCommand cmd = new SqlCommand("sp_ActualizarProducto", _connection))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
-
                     cmd.Parameters.AddWithValue("@ProductoID", producto.ProductoID);
                     cmd.Parameters.AddWithValue("@Nombre", producto.Nombre);
                     cmd.Parameters.AddWithValue("@Descripcion", producto.Descripcion);
@@ -60,74 +54,93 @@ namespace Data.Repositories
                     cmd.Parameters.AddWithValue("@CantidadStock", producto.CantidadStock);
                     cmd.Parameters.AddWithValue("@StockMinimo", producto.StockMinimo);
 
-                    if (_connectionString.State != ConnectionState.Open)
-                        _connectionString.Open();
+                    AbrirConexion();
                     cmd.ExecuteNonQuery();
                 }
             }
-            catch (Exception ex)
+            finally
             {
-                throw new Exception("Error al actualizar el producto.", ex);
+                CerrarConexion();
             }
         }
 
-        public void Eliminar(int productoId)
+        public void Eliminar(int productoID)
         {
             try
             {
-                
-                using (SqlCommand cmd = new SqlCommand("SP_BorrarProducto", _connectionString))
+                using (SqlCommand cmd = new SqlCommand("sp_EliminarProducto", _connection))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@ProductoID", productoID);
 
-                    cmd.Parameters.AddWithValue("@ProductoID", productoId);
-
-                    if (_connectionString.State != ConnectionState.Open)
-                        _connectionString.Open();
+                    AbrirConexion();
                     cmd.ExecuteNonQuery();
                 }
             }
-            catch (Exception ex)
+            finally
             {
-                throw new Exception("Error al eliminar el producto.", ex);
+                CerrarConexion();
             }
         }
 
-
-        public Producto ObtenerPorID(int productoId)
+        public Producto ObtenerPorID(int productoID)
         {
+            Producto producto = null;
+
             try
             {
-            
-                using (SqlCommand cmd = new SqlCommand("SP_ConsultarProducto", _connectionString))
+                using (SqlCommand cmd = new SqlCommand("sp_ObtenerProductoPorID", _connection))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.AddWithValue("@ProductoID", productoId);
+                    cmd.Parameters.AddWithValue("@ProductoID", productoID);
 
-                    if (_connectionString.State != ConnectionState.Open)
-                        _connectionString.Open();
+                    AbrirConexion();
+
                     using (SqlDataReader reader = cmd.ExecuteReader())
                     {
                         if (reader.Read())
                         {
-                            return new Producto
-                            {
-                                ProductoID = Convert.ToInt32(reader["ProductoID"]),
-                                Nombre = reader["Nombre"].ToString(),
-                                Descripcion = reader["Descripcion"].ToString(),
-                                Precio = Convert.ToDecimal(reader["Precio"]),
-                                CantidadStock = Convert.ToInt32(reader["CantidadStock"]),
-                                StockMinimo = Convert.ToInt32(reader["StockMinimo"])
-                            };
+                            producto = MapearProducto(reader);
                         }
                     }
                 }
-                return null; // No encontró el producto
             }
-            catch (Exception ex)
+            finally
             {
-                throw new Exception("Error al obtener el producto por ID.", ex);
+                CerrarConexion();
             }
+
+            return producto;
+        }
+
+        public Producto ObtenerPorNombre(string nombre)
+        {
+            Producto producto = null;
+
+            try
+            {
+                using (SqlCommand cmd = new SqlCommand("sp_ObtenerProductoPorNombre", _connection))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@Nombre", nombre);
+
+                    AbrirConexion();
+
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            producto = MapearProducto(reader);
+                        }
+                    }
+                }
+            }
+            finally
+            {
+                CerrarConexion();
+            }
+
+            return producto;
         }
 
         public List<Producto> ObtenerTodos()
@@ -136,39 +149,51 @@ namespace Data.Repositories
 
             try
             {
-                
-                using (SqlCommand cmd = new SqlCommand("SP_ConsultarProducto", _connectionString))
+                using (SqlCommand cmd = new SqlCommand("sp_ObtenerTodosProductos", _connection))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
-                    // Para obtener todos, suponemos que el SP acepta NULL para ProductoID
-                    cmd.Parameters.AddWithValue("@ProductoID", DBNull.Value);
+                    AbrirConexion();
 
-                    if (_connectionString.State != ConnectionState.Open)
-                        _connectionString.Open();
                     using (SqlDataReader reader = cmd.ExecuteReader())
                     {
                         while (reader.Read())
                         {
-                            productos.Add(new Producto
-                            {
-                                ProductoID = Convert.ToInt32(reader["ProductoID"]),
-                                Nombre = reader["Nombre"].ToString(),
-                                Descripcion = reader["Descripcion"].ToString(),
-                                Precio = Convert.ToDecimal(reader["Precio"]),
-                                CantidadStock = Convert.ToInt32(reader["CantidadStock"]),
-                                StockMinimo = Convert.ToInt32(reader["StockMinimo"])
-                            });
+                            productos.Add(MapearProducto(reader));
                         }
                     }
                 }
-                return productos;
             }
-            catch (Exception ex)
+            finally
             {
-                throw new Exception("Error al obtener la lista de productos.", ex);
+                CerrarConexion();
             }
+
+            return productos;
         }
 
-        
+        private Producto MapearProducto(SqlDataReader reader)
+        {
+            return new Producto
+            {
+                ProductoID = Convert.ToInt32(reader["ProductoID"]),
+                Nombre = reader["Nombre"].ToString(),
+                Descripcion = reader["Descripcion"].ToString(),
+                Precio = Convert.ToDecimal(reader["Precio"]),
+                CantidadStock = Convert.ToInt32(reader["CantidadStock"]),
+                StockMinimo = Convert.ToInt32(reader["StockMinimo"])
+            };
+        }
+
+        private void AbrirConexion()
+        {
+            if (_connection.State != ConnectionState.Open)
+                _connection.Open();
+        }
+
+        private void CerrarConexion()
+        {
+            if (_connection.State == ConnectionState.Open)
+                _connection.Close();
+        }
     }
 }
