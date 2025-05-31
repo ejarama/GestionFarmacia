@@ -54,6 +54,8 @@ namespace GestionFarmacia
             btnProductos.Enabled = RolPermisos.PuedeAccederProductos(rol);
             btnVentas.Enabled = RolPermisos.PuedeAccederVentas(rol);
             btnPromociones.Enabled = RolPermisos.PuedeAccederPromociones(rol);
+            btnPedidos.Enabled = RolPermisos.PuedeAccederPedidos(rol);
+            btnReglasPedido.Enabled = RolPermisos.PuedeAccederReglasPedidos(rol);
         }
 
 
@@ -108,6 +110,19 @@ namespace GestionFarmacia
         private void btnPromociones_Click(object sender, EventArgs e)
         {
             var form = new FrmPromociones();
+            form.ShowDialog();
+        }
+
+        private void btnPedidos_Click(object sender, EventArgs e)
+        {
+            var pedidoRepo = new PedidoRepository();
+            FrmRecepcionPedidos form = new FrmRecepcionPedidos(pedidoRepo);
+            form.ShowDialog();
+        }
+
+        private void btnReglasPedido_Click(object sender, EventArgs e)
+        {
+            FrmReglasPedido form = new FrmReglasPedido();
             form.ShowDialog();
         }
     }

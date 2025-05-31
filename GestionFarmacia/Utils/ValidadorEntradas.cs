@@ -1,4 +1,5 @@
 ﻿using GestionFarmacia.Entities;
+using System.Windows.Forms;
 
 namespace GestionFarmacia.Utils
 {
@@ -50,5 +51,38 @@ namespace GestionFarmacia.Utils
 
             return true;
         }
+
+        
+        public static bool EsEnteroNoNegativo(string texto, out int resultado)
+        {
+            return int.TryParse(texto, out resultado) && resultado >= 0;
+        }
+
+       
+        public static bool TextoNoVacio(string texto)
+        {
+            return !string.IsNullOrWhiteSpace(texto);
+        }
+
+        public static bool EsDecimalPositivo(string texto, out decimal resultado)
+        {
+            return decimal.TryParse(texto, out resultado) && resultado > 0;
+        }
+
+        public static bool ValidarCantidadRecibida(DataGridView dgv, string columnaCantidad)
+        {
+            foreach (DataGridViewRow row in dgv.Rows)
+            {
+                if (row.IsNewRow) continue;
+
+                var valor = row.Cells[columnaCantidad].Value;
+                if (valor == null || !int.TryParse(valor.ToString(), out int cantidad) || cantidad < 0)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
     }
 }

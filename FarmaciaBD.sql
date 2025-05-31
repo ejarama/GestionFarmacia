@@ -85,6 +85,17 @@ CREATE TABLE Proveedores (
 );
 GO
 
+CREATE TABLE ReglasPedido (
+    ReglaID INT PRIMARY KEY IDENTITY(1,1),
+    ProductoID INT NOT NULL,
+    ProveedorID INT NOT NULL,
+    CantidadSugerida INT NOT NULL,
+    Activa BIT NOT NULL DEFAULT 1,
+    FOREIGN KEY (ProductoID) REFERENCES Productos(ProductoID),
+    FOREIGN KEY (ProveedorID) REFERENCES Proveedores(ProveedorID)
+);
+
+
 -- Tabla intermedia: ProveedorProducto
 CREATE TABLE ProveedorProducto (
     ProveedorID INT NOT NULL,
@@ -109,6 +120,27 @@ GO
 
 CREATE INDEX IX_Promociones_Producto_Fecha
 ON Promociones (ProductoID, FechaInicio, FechaFin);
+GO
+
+CREATE TABLE Pedidos (
+    PedidoID INT PRIMARY KEY IDENTITY(1,1),
+    ProveedorID INT NOT NULL,
+    FechaPedido DATE NOT NULL,
+    FechaRecepcion DATE NULL,
+    Estado VARCHAR(30) NOT NULL DEFAULT 'Pendiente', -- Pendiente, Parcialmente recibido, Recibido
+    CONSTRAINT FK_Pedidos_Proveedor FOREIGN KEY (ProveedorID) REFERENCES Proveedores(ProveedorID)
+);
+GO
+
+CREATE TABLE DetallePedido (
+    DetallePedidoID INT PRIMARY KEY IDENTITY(1,1),
+    PedidoID INT NOT NULL,
+    ProductoID INT NOT NULL,
+    CantidadSolicitada INT NOT NULL,
+    CantidadRecibida INT NULL,
+    CONSTRAINT FK_DetallePedido_Pedido FOREIGN KEY (PedidoID) REFERENCES Pedidos(PedidoID),
+    CONSTRAINT FK_DetallePedido_Producto FOREIGN KEY (ProductoID) REFERENCES Productos(ProductoID)
+);
 GO
 
 -- SP Insertar Usuario
@@ -422,7 +454,7 @@ END
 GO
 
 -- SP Insertar DetalleVenta
-CREATE PROCEDURE SP_InsertarDetalleVenta
+CREATE OR ALTER PROCEDURE SP_InsertarDetalleVenta
     @VentaID INT,
     @ProductoID INT,
     @Cantidad INT,
@@ -480,15 +512,24 @@ END
 GO
 
 -- SP Consultar DetalleVenta
-CREATE PROCEDURE SP_ConsultarDetalleVenta
+CREATE OR ALTER PROCEDURE SP_ConsultarDetalleVenta
     @VentaID INT
 AS
 BEGIN
-    SELECT dv.ProductoID, p.Nombre AS NombreProducto, dv.Cantidad, dv.PrecioUnitario, dv.PorcentajeDescuento
-FROM DetalleVenta dv
-JOIN Productos p ON dv.ProductoID = p.ProductoID
-WHERE dv.VentaID = @VentaID
+    SELECT 
+        dv.ProductoID,
+        p.Nombre AS NombreProducto,
+        dv.Cantidad,
+        dv.PrecioUnitario,
+        dv.PorcentajeDescuento
+    FROM DetalleVenta dv
+    INNER JOIN Productos p ON dv.ProductoID = p.ProductoID
+    WHERE dv.VentaID = @VentaID
 END
+GO
+
+
+select * from DetalleVenta
 
 
 -- SP Consultar DetalleVenta Por VentaID
@@ -774,5 +815,171 @@ BEGIN
     WHERE ProductoID = @ProductoID
       AND @Fecha BETWEEN FechaInicio AND FechaFin
     ORDER BY FechaInicio DESC
+END
+GO
+
+CREATE OR ALTER PROCEDURE SP_CrearPedido
+    @ProveedorID INT,
+    @FechaPedido DATE,
+    @PedidoID INT OUTPUT
+AS
+BEGIN
+    INSERT INTO Pedidos (ProveedorID, FechaPedido, Estado)
+    VALUES (@ProveedorID, @FechaPedido, 'Pendiente');
+
+    SET @PedidoID = SCOPE_IDENTITY();
+END
+GO
+
+CREATE OR ALTER PROCEDURE SP_InsertarDetallePedido
+    @PedidoID INT,
+    @ProductoID INT,
+    @CantidadSolicitada INT
+AS
+BEGIN
+    INSERT INTO DetallePedido (PedidoID, ProductoID, CantidadSolicitada)
+    VALUES (@PedidoID, @ProductoID, @CantidadSolicitada);
+END
+GO
+
+CREATE OR ALTER PROCEDURE SP_ObtenerPedidosPendientes
+AS
+BEGIN
+    SELECT p.PedidoID, p.FechaPedido, p.Estado, pr.Nombre AS ProveedorNombre
+    FROM Pedidos p
+    JOIN Proveedores pr ON p.ProveedorID = pr.ProveedorID
+    WHERE p.Estado IN ('Pendiente', 'Parcialmente recibido');
+END
+GO
+
+CREATE OR ALTER PROCEDURE SP_ObtenerDetallePedido
+    @PedidoID INT
+AS
+BEGIN
+    SELECT dp.DetallePedidoID, dp.ProductoID, pr.Nombre AS NombreProducto,
+           dp.CantidadSolicitada, dp.CantidadRecibida
+    FROM DetallePedido dp
+    JOIN Productos pr ON dp.ProductoID = pr.ProductoID
+    WHERE dp.PedidoID = @PedidoID;
+END
+GO
+
+CREATE OR ALTER PROCEDURE SP_RegistrarRecepcionPedido
+    @PedidoID INT
+AS
+BEGIN
+    DECLARE @Total INT, @Recibidos INT;
+
+    -- Actualiza la fecha de recepción
+    UPDATE Pedidos
+    SET FechaRecepcion = GETDATE()
+    WHERE PedidoID = @PedidoID;
+
+    -- Verifica estado del pedido
+    SELECT @Total = COUNT(*)
+    FROM DetallePedido
+    WHERE PedidoID = @PedidoID;
+
+    SELECT @Recibidos = COUNT(*)
+    FROM DetallePedido
+    WHERE PedidoID = @PedidoID AND CantidadRecibida = CantidadSolicitada;
+
+    IF @Recibidos = @Total
+        UPDATE Pedidos SET Estado = 'Recibido' WHERE PedidoID = @PedidoID;
+    ELSE
+        UPDATE Pedidos SET Estado = 'Parcialmente recibido' WHERE PedidoID = @PedidoID;
+END
+GO
+
+CREATE OR ALTER PROCEDURE SP_ActualizarCantidadRecibida
+    @DetallePedidoID INT,
+    @CantidadRecibida INT
+AS
+BEGIN
+    UPDATE DetallePedido
+    SET CantidadRecibida = @CantidadRecibida
+    WHERE DetallePedidoID = @DetallePedidoID;
+END
+GO
+
+-- Cambia estado del pedido y fecha de recepción
+CREATE PROCEDURE SP_RegistrarRecepcionPedido
+    @PedidoID INT
+AS
+BEGIN
+    UPDATE Pedidos
+    SET Estado = 'Recibido',
+        FechaRecepcion = GETDATE()
+    WHERE PedidoID = @PedidoID
+END
+GO
+
+-- Registra la cantidad recibida por detalle
+CREATE PROCEDURE SP_RegistrarRecepcionDetalle
+    @DetallePedidoID INT,
+    @CantidadRecibida INT
+AS
+BEGIN
+    UPDATE DetallePedidos
+    SET CantidadRecibida = @CantidadRecibida
+    WHERE DetallePedidoID = @DetallePedidoID
+
+    -- También actualiza el inventario
+    UPDATE Productos
+    SET CantidadStock = CantidadStock + @CantidadRecibida
+    WHERE ProductoID = (SELECT ProductoID FROM DetallePedidos WHERE DetallePedidoID = @DetallePedidoID)
+END
+GO
+
+CREATE PROCEDURE SP_AumentarStockProducto
+    @ProductoID INT,
+    @Cantidad INT
+AS
+BEGIN
+    UPDATE Productos
+    SET CantidadStock = CantidadStock + @Cantidad
+    WHERE ProductoID = @ProductoID;
+END
+GO
+
+CREATE PROCEDURE SP_ActualizarEstadoPedido
+    @PedidoID INT,
+    @FechaRecepcion DATETIME,
+    @Estado NVARCHAR(50)
+AS
+BEGIN
+    UPDATE Pedidos
+    SET FechaRecepcion = @FechaRecepcion,
+        Estado = @Estado
+    WHERE PedidoID = @PedidoID;
+END
+GO
+
+CREATE PROCEDURE SP_InsertarReglaPedido
+    @ProductoID INT,
+    @ProveedorID INT,
+    @CantidadSugerida INT,
+    @Activa BIT
+AS
+BEGIN
+    INSERT INTO ReglasPedido (ProductoID, ProveedorID, CantidadSugerida, Activa)
+    VALUES (@ProductoID, @ProveedorID, @CantidadSugerida, @Activa);
+END
+GO
+
+CREATE PROCEDURE SP_ActualizarReglaPedido
+    @ReglaID INT,
+    @ProductoID INT,
+    @ProveedorID INT,
+    @CantidadSugerida INT,
+    @Activa BIT
+AS
+BEGIN
+    UPDATE ReglasPedido
+    SET ProductoID = @ProductoID,
+        ProveedorID = @ProveedorID,
+        CantidadSugerida = @CantidadSugerida,
+        Activa = @Activa
+    WHERE ReglaID = @ReglaID;
 END
 GO

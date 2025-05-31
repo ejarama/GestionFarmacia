@@ -47,6 +47,8 @@ namespace GestionFarmacia
             this.btnSalir = new System.Windows.Forms.Button();
             this.btnUsuarios = new System.Windows.Forms.Button();
             this.btnPromociones = new System.Windows.Forms.Button();
+            this.btnPedidos = new System.Windows.Forms.Button();
+            this.btnReglasPedido = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // lblUsuario
@@ -114,7 +116,7 @@ namespace GestionFarmacia
             // btnSalir
             // 
             this.btnSalir.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnSalir.Location = new System.Drawing.Point(344, 328);
+            this.btnSalir.Location = new System.Drawing.Point(551, 328);
             this.btnSalir.Name = "btnSalir";
             this.btnSalir.Size = new System.Drawing.Size(113, 35);
             this.btnSalir.TabIndex = 6;
@@ -145,11 +147,35 @@ namespace GestionFarmacia
             this.btnPromociones.UseVisualStyleBackColor = true;
             this.btnPromociones.Click += new System.EventHandler(this.btnPromociones_Click);
             // 
+            // btnPedidos
+            // 
+            this.btnPedidos.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnPedidos.Location = new System.Drawing.Point(167, 328);
+            this.btnPedidos.Name = "btnPedidos";
+            this.btnPedidos.Size = new System.Drawing.Size(127, 48);
+            this.btnPedidos.TabIndex = 8;
+            this.btnPedidos.Text = "Recepción de Pedidos";
+            this.btnPedidos.UseVisualStyleBackColor = true;
+            this.btnPedidos.Click += new System.EventHandler(this.btnPedidos_Click);
+            // 
+            // btnReglasPedido
+            // 
+            this.btnReglasPedido.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnReglasPedido.Location = new System.Drawing.Point(365, 328);
+            this.btnReglasPedido.Name = "btnReglasPedido";
+            this.btnReglasPedido.Size = new System.Drawing.Size(91, 48);
+            this.btnReglasPedido.TabIndex = 9;
+            this.btnReglasPedido.Text = "Reglas de Pedido";
+            this.btnReglasPedido.UseVisualStyleBackColor = true;
+            this.btnReglasPedido.Click += new System.EventHandler(this.btnReglasPedido_Click);
+            // 
             // FrmPrincipal
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.btnReglasPedido);
+            this.Controls.Add(this.btnPedidos);
             this.Controls.Add(this.btnPromociones);
             this.Controls.Add(this.btnUsuarios);
             this.Controls.Add(this.btnSalir);
@@ -170,6 +196,8 @@ namespace GestionFarmacia
         #endregion
 
         private System.Windows.Forms.Button btnPromociones;
+        private System.Windows.Forms.Button btnPedidos;
+        private System.Windows.Forms.Button btnReglasPedido;
     }
 }
 

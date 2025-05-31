@@ -49,26 +49,33 @@
   <ItemGroup>
     <Compile Include="Data\DatabaseConnection.cs" />
     <Compile Include="Data\Interfaces\IDetalleVentaRepository.cs" />
+    <Compile Include="Data\Interfaces\IPedidoRepository.cs" />
     <Compile Include="Data\Interfaces\IPromocionRepository.cs" />
     <Compile Include="Data\Interfaces\IProveedorProductoRepository.cs" />
     <Compile Include="Data\Interfaces\IProveedorRepository.cs" />
+    <Compile Include="Data\Interfaces\IReglaPedidoRepository.cs" />
     <Compile Include="Data\Interfaces\IUnitOfWork.cs" />
     <Compile Include="Data\Interfaces\IVentaRepository.cs" />
     <Compile Include="Data\Interfaces\IProductoRepository.cs" />
     <Compile Include="Data\Repositories\DetalleVentaRepository.cs" />
     <Compile Include="Data\Interfaces\IUsuarioRepository.cs" />
+    <Compile Include="Data\Repositories\PedidoReprository.cs" />
     <Compile Include="Data\Repositories\ProductoRepository.cs" />
     <Compile Include="Data\Repositories\PromocionRepository.cs" />
     <Compile Include="Data\Repositories\ProveedorProductoRepository.cs" />
     <Compile Include="Data\Repositories\ProveedorRepository.cs" />
+    <Compile Include="Data\Repositories\ReglaPedidoRepository.cs" />
     <Compile Include="Data\Repositories\UsuarioRepository.cs" />
     <Compile Include="Data\UnitOfWork.cs" />
     <Compile Include="Data\Repositories\VentaRepository.cs" />
+    <Compile Include="Entities\DetallePedido.cs" />
     <Compile Include="Entities\DetalleVenta.cs" />
+    <Compile Include="Entities\Pedido.cs" />
     <Compile Include="Entities\Producto.cs" />
     <Compile Include="Entities\Promocion.cs" />
     <Compile Include="Entities\Proveedor.cs" />
     <Compile Include="Entities\ProveedorProducto.cs" />
+    <Compile Include="Entities\ReglaPedido.cs" />
     <Compile Include="Entities\Usuario.cs" />
     <Compile Include="Entities\Venta.cs" />
     <Compile Include="Factory\ReporteFactory.cs" />
@@ -84,6 +91,18 @@
     </Compile>
     <Compile Include="Forms\FrmPromociones.Designer.cs">
       <DependentUpon>FrmPromociones.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\FrmRecepcionPedidos.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FrmRecepcionPedidos.Designer.cs">
+      <DependentUpon>FrmRecepcionPedidos.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\FrmReglasPedido.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FrmReglasPedido.Designer.cs">
+      <DependentUpon>FrmReglasPedido.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\FrmUsuarios.cs">
       <SubType>Form</SubType>
@@ -152,6 +171,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\FrmProveedores.resx">
       <DependentUpon>FrmProveedores.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FrmRecepcionPedidos.resx">
+      <DependentUpon>FrmRecepcionPedidos.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FrmReglasPedido.resx">
+      <DependentUpon>FrmReglasPedido.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\FrmReportes.resx">
       <DependentUpon>FrmReportes.cs</DependentUpon>
