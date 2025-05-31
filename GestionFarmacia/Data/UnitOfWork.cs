@@ -1,6 +1,5 @@
 ﻿using GestionFarmacia.Entities;
 using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 
@@ -52,6 +51,7 @@ namespace GestionFarmacia.Data
                     cmdDetalle.Parameters.AddWithValue("@ProductoID", detalle.ProductoID);
                     cmdDetalle.Parameters.AddWithValue("@Cantidad", detalle.Cantidad);
                     cmdDetalle.Parameters.AddWithValue("@PrecioUnitario", detalle.PrecioUnitario);
+                    cmdDetalle.Parameters.AddWithValue("@PorcentajeDescuento", detalle.PorcentajeDescuento);
                     cmdDetalle.ExecuteNonQuery();
 
                     // Actualizar stock

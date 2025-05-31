@@ -143,7 +143,8 @@ namespace GestionFarmacia.Data
                                     ProductoID = Convert.ToInt32(reader["ProductoID"]),
                                     NombreProducto = reader["NombreProducto"].ToString(),
                                     Cantidad = Convert.ToInt32(reader["Cantidad"]),
-                                    PrecioUnitario = Convert.ToDecimal(reader["PrecioUnitario"])
+                                    PrecioUnitario = Convert.ToDecimal(reader["PrecioUnitario"]),
+                                    PorcentajeDescuento = reader["PorcentajeDescuento"] != DBNull.Value ? Convert.ToDecimal(reader["PorcentajeDescuento"]): 0
                                 });
                             }
                             reader.Close();

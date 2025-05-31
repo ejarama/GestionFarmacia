@@ -5,7 +5,6 @@ using GestionFarmacia.Services;
 using GestionFarmacia.Utils;
 using GestionFarmacia.Data.Interfaces;
 using System.Collections.Generic;
-using GestionFarmacia.Utils;
 using GestionFarmacia.Services.Interfaces;
 
 namespace GestionFarmacia.Forms

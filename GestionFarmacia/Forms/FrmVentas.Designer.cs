@@ -229,7 +229,6 @@ namespace GestionFarmacia.Forms
         private System.Windows.Forms.Label lblTotal;
         private System.Windows.Forms.ComboBox cmbProducto;
         private System.Windows.Forms.TextBox txtCantidad;
-        private System.Windows.Forms.TextBox txtPrecioTotal;
         private System.Windows.Forms.Button btnAgregar;
         private System.Windows.Forms.Button btnRegistrarVenta;
         private System.Windows.Forms.Button btnLimpiar;

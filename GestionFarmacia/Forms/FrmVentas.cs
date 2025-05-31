@@ -48,7 +48,7 @@ namespace GestionFarmacia.Forms
 
                 if (exito)
                 {
-                    MessageBox.Show("Venta registrada con éxito.");
+                    MessageBox.Show($"Venta registrada con éxito.\nNúmero de venta: {venta.VentaID}", "Registro exitoso", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     btnRegistrarVenta.Enabled = false ;
                     btnBuscarVenta.Enabled = false;
                 }
@@ -81,6 +81,10 @@ namespace GestionFarmacia.Forms
                 }
 
                 var producto = (Producto)cmbProducto.SelectedItem;
+                var promoRepo = new PromocionRepository();
+                var promocion = promoRepo.ObtenerPromocionVigentePorProducto(producto.ProductoID, DateTime.Now);
+
+                decimal porcentajeDescuento = promocion?.PorcentajeDescuento ?? 0;
 
                 if (cantidad > producto.CantidadStock)
                 {
@@ -88,7 +92,7 @@ namespace GestionFarmacia.Forms
                     return;
                 }
 
-                var existente = detalleVenta.Find(d => d.ProductoID == producto.ProductoID);
+                var existente = detalleVenta.FirstOrDefault(d => d.ProductoID == producto.ProductoID);
                 if (existente != null)
                 {
                     existente.Cantidad += cantidad;
@@ -99,10 +103,12 @@ namespace GestionFarmacia.Forms
                     {
                         ProductoID = producto.ProductoID,
                         NombreProducto = producto.Nombre,
-                        Cantidad = cantidad,
-                        PrecioUnitario = producto.Precio
+                        PrecioUnitario = producto.Precio,
+                        PorcentajeDescuento = porcentajeDescuento,
+                        Cantidad = cantidad
                     });
                 }
+
 
                 ActualizarDetalle();
                 txtCantidad.Clear();
@@ -117,21 +123,12 @@ namespace GestionFarmacia.Forms
 
         private void ActualizarDetalle()
         {
-            try
-            {
-                dgvDetalleVenta.DataSource = null;
-                dgvDetalleVenta.DataSource = detalleVenta;
+            dgvDetalleVenta.DataSource = null;
+            dgvDetalleVenta.DataSource = detalleVenta;
+            ConfigurarColumnasDgvDetalle();
 
-                decimal total = 0;
-                foreach (var item in detalleVenta)
-                    total += item.Subtotal;
-
-                lblTotal.Text = $"Total: ${total:F2}";
-            }
-            catch (Exception ex)
-            {
-                ManejadorErrores.Mostrar(ex);
-            }
+            decimal total = detalleVenta.Sum(d => d.Subtotal);
+            lblTotal.Text = $"Total: ${total:F2}";
         }
 
 
@@ -147,6 +144,8 @@ namespace GestionFarmacia.Forms
                 lblUsuario.Text = $"Usuario: {_usuario.NombreUsuario}";
                 lblFecha.Text = $"Fecha: {DateTime.Now:dd/MM/yyyy}";
                 btnRegistrarVenta.Enabled = true;
+                btnBuscarVenta.Enabled = true;
+                btnAgregar.Enabled = true;
             }
             catch (Exception ex)
             {
@@ -205,24 +204,70 @@ namespace GestionFarmacia.Forms
                         return;
                     }
 
-                    // Bloqueamos el botón de registrar
-                    btnRegistrarVenta.Enabled = false;
-
-                    // Mostramos datos de la venta consultada
                     detalleVenta = venta.Detalles;
-                    ActualizarDetalle();
 
+                    // Mostrar datos
                     lblFecha.Text = $"Fecha: {venta.FechaVenta:dd/MM/yyyy}";
                     lblUsuario.Text = $"Usuario ID: {venta.UsuarioID}";
                     lblTotal.Text = $"Total: ${venta.TotalVenta:F2}";
 
-                    MessageBox.Show("Venta cargada correctamente.");
+                    // Deshabilitar botones
+                    btnRegistrarVenta.Enabled = false;
+                    btnAgregar.Enabled = false;
+
+
+
+                    ActualizarDetalle(); // Refresca el DGV
                 }
                 catch (Exception ex)
                 {
                     ManejadorErrores.Mostrar(ex);
                 }
             }
+        }
+
+        private void ConfigurarColumnasDgvDetalle()
+        {
+            dgvDetalleVenta.Columns.Clear();
+            dgvDetalleVenta.AutoGenerateColumns = false;
+
+            dgvDetalleVenta.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                HeaderText = "Producto",
+                DataPropertyName = "NombreProducto",
+                ReadOnly = true
+            });
+
+            dgvDetalleVenta.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                HeaderText = "Precio Unitario",
+                DataPropertyName = "PrecioUnitario",
+                ReadOnly = true,
+                DefaultCellStyle = { Format = "C2" }
+            });
+
+            dgvDetalleVenta.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                HeaderText = "% Descuento",
+                DataPropertyName = "PorcentajeDescuento",
+                ReadOnly = true,
+                DefaultCellStyle = { Format = "N2" }
+            });
+
+            dgvDetalleVenta.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                HeaderText = "Cantidad",
+                DataPropertyName = "Cantidad",
+                ReadOnly = true
+            });
+
+            dgvDetalleVenta.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                HeaderText = "Subtotal",
+                DataPropertyName = "Subtotal",
+                ReadOnly = true,
+                DefaultCellStyle = { Format = "C2" }
+            });
         }
 
         private void btnLimpiar_Click(object sender, EventArgs e)

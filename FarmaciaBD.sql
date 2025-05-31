@@ -73,6 +73,10 @@ CREATE TABLE DetalleVenta (
 );
 GO
 
+ALTER TABLE DetalleVenta
+ADD PorcentajeDescuento DECIMAL(5,2) NULL;
+GO
+
 -- Tabla de Proveedores
 CREATE TABLE Proveedores (
     ProveedorID INT IDENTITY(1,1) PRIMARY KEY,
@@ -415,18 +419,19 @@ BEGIN
     FROM Ventas
     WHERE VentaID = @VentaID
 END
-
+GO
 
 -- SP Insertar DetalleVenta
-CREATE PROCEDURE sp_InsertarDetalleVenta
+CREATE PROCEDURE SP_InsertarDetalleVenta
     @VentaID INT,
     @ProductoID INT,
     @Cantidad INT,
-    @PrecioUnitario DECIMAL(18, 2)
+    @PrecioUnitario DECIMAL(18,2),
+    @PorcentajeDescuento DECIMAL(5,2)
 AS
 BEGIN
-    INSERT INTO DetalleVenta (VentaID, ProductoID, Cantidad, PrecioUnitario)
-    VALUES (@VentaID, @ProductoID, @Cantidad, @PrecioUnitario);
+    INSERT INTO DetalleVenta (VentaID, ProductoID, Cantidad, PrecioUnitario, PorcentajeDescuento)
+    VALUES (@VentaID, @ProductoID, @Cantidad, @PrecioUnitario, @PorcentajeDescuento)
 END
 GO
 
@@ -479,10 +484,10 @@ CREATE PROCEDURE SP_ConsultarDetalleVenta
     @VentaID INT
 AS
 BEGIN
-    SELECT dv.ProductoID, p.Nombre AS NombreProducto, dv.Cantidad, dv.PrecioUnitario
-    FROM DetalleVenta dv
-    INNER JOIN Productos p ON dv.ProductoID = p.ProductoID
-    WHERE dv.VentaID = @VentaID
+    SELECT dv.ProductoID, p.Nombre AS NombreProducto, dv.Cantidad, dv.PrecioUnitario, dv.PorcentajeDescuento
+FROM DetalleVenta dv
+JOIN Productos p ON dv.ProductoID = p.ProductoID
+WHERE dv.VentaID = @VentaID
 END
 
 
