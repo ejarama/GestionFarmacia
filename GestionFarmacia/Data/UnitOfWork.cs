@@ -7,10 +7,9 @@ using GestionFarmacia.Entities;
 
 namespace GestionFarmacia.Utils
 {
-    public class UnitOfWork : IUnitOfWork
+    public class UnitOfWork
     {
         private readonly SqlConnection _connection;
-
 
         public UnitOfWork()
         {
