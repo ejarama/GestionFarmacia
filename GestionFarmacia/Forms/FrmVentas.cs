@@ -1,4 +1,5 @@
-﻿using GestionFarmacia.Data.Repositories;
+﻿using GestionFarmacia.Data;
+using GestionFarmacia.Data.Repositories;
 using GestionFarmacia.Entities;
 using GestionFarmacia.Utils;
 using System;
@@ -48,7 +49,8 @@ namespace GestionFarmacia.Forms
                 if (exito)
                 {
                     MessageBox.Show("Venta registrada con éxito.");
-                    LimpiarFormulario();
+                    btnRegistrarVenta.Enabled = false ;
+                    btnBuscarVenta.Enabled = false;
                 }
                 else
                 {
@@ -142,12 +144,16 @@ namespace GestionFarmacia.Forms
                 cmbProducto.SelectedIndex = -1;
                 txtCantidad.Clear();
                 lblTotal.Text = "Total: $0.00";
+                lblUsuario.Text = $"Usuario: {_usuario.NombreUsuario}";
+                lblFecha.Text = $"Fecha: {DateTime.Now:dd/MM/yyyy}";
+                btnRegistrarVenta.Enabled = true;
             }
             catch (Exception ex)
             {
                 ManejadorErrores.Mostrar(ex);
             }
         }
+
 
         private void dgvDetalleVenta_CellClick(object sender, DataGridViewCellEventArgs e)
         {
@@ -185,6 +191,43 @@ namespace GestionFarmacia.Forms
             }
         }
 
+        private void btnBuscarVenta_Click(object sender, EventArgs e)
+        {
+            FrmBuscarVenta buscar = new FrmBuscarVenta();
+            if (buscar.ShowDialog() == DialogResult.OK && buscar.VentaIDSeleccionada.HasValue)
+            {
+                try
+                {
+                    var venta = new VentaRepository().ObtenerPorId(buscar.VentaIDSeleccionada.Value);
+                    if (venta == null)
+                    {
+                        MessageBox.Show("Venta no encontrada.");
+                        return;
+                    }
 
+                    // Bloqueamos el botón de registrar
+                    btnRegistrarVenta.Enabled = false;
+
+                    // Mostramos datos de la venta consultada
+                    detalleVenta = venta.Detalles;
+                    ActualizarDetalle();
+
+                    lblFecha.Text = $"Fecha: {venta.FechaVenta:dd/MM/yyyy}";
+                    lblUsuario.Text = $"Usuario ID: {venta.UsuarioID}";
+                    lblTotal.Text = $"Total: ${venta.TotalVenta:F2}";
+
+                    MessageBox.Show("Venta cargada correctamente.");
+                }
+                catch (Exception ex)
+                {
+                    ManejadorErrores.Mostrar(ex);
+                }
+            }
+        }
+
+        private void btnLimpiar_Click(object sender, EventArgs e)
+        {
+            LimpiarFormulario();
+        }
     }
 }

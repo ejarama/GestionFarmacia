@@ -8,29 +8,26 @@ namespace GestionFarmacia.Data
 {
     public class VentaRepository : IVentaRepository
     {
-        private readonly string _connectionString;
+        private readonly SqlConnection _connection;
 
-        public VentaRepository(string connectionString)
+        public VentaRepository()
         {
-            _connectionString = connectionString;
+            _connection = DatabaseConnection.Instance.GetConnection();
         }
 
         public void Insertar(Venta venta)
         {
             try
             {
-                using (SqlConnection conn = new SqlConnection(_connectionString))
-                using (SqlCommand cmd = new SqlCommand("SP_InsertarVenta", conn))
+                if (_connection.State != ConnectionState.Open)
+                    _connection.Open();
+
+                using (SqlCommand cmd = new SqlCommand("SP_InsertarVenta", _connection))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
-
-                    // Parámetros para la venta
                     cmd.Parameters.AddWithValue("@UsuarioID", venta.UsuarioID);
                     cmd.Parameters.AddWithValue("@FechaVenta", venta.FechaVenta);
                     cmd.Parameters.AddWithValue("@TotalVenta", venta.TotalVenta);
-
-                    // Abrir conexión y ejecutar
-                    conn.Open();
                     cmd.ExecuteNonQuery();
                 }
             }
@@ -38,23 +35,27 @@ namespace GestionFarmacia.Data
             {
                 throw new Exception("Error al insertar la venta.", ex);
             }
+            finally
+            {
+                if (_connection.State == ConnectionState.Open)
+                    _connection.Close();
+            }
         }
 
         public void Actualizar(Venta venta)
         {
             try
             {
-                using (SqlConnection conn = new SqlConnection(_connectionString))
-                using (SqlCommand cmd = new SqlCommand("SP_ActualizarVenta", conn))
+                if (_connection.State != ConnectionState.Open)
+                    _connection.Open();
+
+                using (SqlCommand cmd = new SqlCommand("SP_ActualizarVenta", _connection))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
-
                     cmd.Parameters.AddWithValue("@VentaID", venta.VentaID);
                     cmd.Parameters.AddWithValue("@UsuarioID", venta.UsuarioID);
                     cmd.Parameters.AddWithValue("@FechaVenta", venta.FechaVenta);
                     cmd.Parameters.AddWithValue("@TotalVenta", venta.TotalVenta);
-
-                    conn.Open();
                     cmd.ExecuteNonQuery();
                 }
             }
@@ -62,26 +63,35 @@ namespace GestionFarmacia.Data
             {
                 throw new Exception("Error al actualizar la venta.", ex);
             }
+            finally
+            {
+                if (_connection.State == ConnectionState.Open)
+                    _connection.Close();
+            }
         }
 
         public void Eliminar(int ventaId)
         {
             try
             {
-                using (SqlConnection conn = new SqlConnection(_connectionString))
-                using (SqlCommand cmd = new SqlCommand("SP_EliminarVenta", conn))
+                if (_connection.State != ConnectionState.Open)
+                    _connection.Open();
+
+                using (SqlCommand cmd = new SqlCommand("SP_EliminarVenta", _connection))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
-
                     cmd.Parameters.AddWithValue("@VentaID", ventaId);
-
-                    conn.Open();
                     cmd.ExecuteNonQuery();
                 }
             }
             catch (Exception ex)
             {
                 throw new Exception("Error al eliminar la venta.", ex);
+            }
+            finally
+            {
+                if (_connection.State == ConnectionState.Open)
+                    _connection.Close();
             }
         }
 
@@ -91,13 +101,14 @@ namespace GestionFarmacia.Data
             {
                 Venta venta = null;
 
-                using (SqlConnection conn = new SqlConnection(_connectionString))
-                using (SqlCommand cmd = new SqlCommand("SP_ConsultarVenta", conn))
+                if (_connection.State != ConnectionState.Open)
+                    _connection.Open();
+
+                using (SqlCommand cmd = new SqlCommand("SP_ConsultarVenta", _connection))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.Parameters.AddWithValue("@VentaID", ventaId);
 
-                    conn.Open();
                     using (SqlDataReader reader = cmd.ExecuteReader())
                     {
                         if (reader.Read())
@@ -111,32 +122,33 @@ namespace GestionFarmacia.Data
                                 Detalles = new List<DetalleVenta>()
                             };
                         }
+                        reader.Close();
                     }
+                }
 
-                    // Si la venta existe, consultar los detalles
-                    if (venta != null)
+                // Si la venta existe, consultar sus detalles
+                if (venta != null)
+                {
+                    using (SqlCommand cmdDetalle = new SqlCommand("SP_ConsultarDetalleVenta", _connection))
                     {
-                        using (SqlCommand cmdDetalle = new SqlCommand("SP_ConsultarDetalleVenta", conn))
-                        {
-                            cmdDetalle.CommandType = CommandType.StoredProcedure;
-                            cmdDetalle.Parameters.AddWithValue("@VentaID", ventaId);
+                        cmdDetalle.CommandType = CommandType.StoredProcedure;
+                        cmdDetalle.Parameters.AddWithValue("@VentaID", ventaId);
 
-                            using (SqlDataReader reader = cmdDetalle.ExecuteReader())
+                        using (SqlDataReader reader = cmdDetalle.ExecuteReader())
+                        {
+                            while (reader.Read())
                             {
-                                while (reader.Read())
+                                venta.Detalles.Add(new DetalleVenta
                                 {
-                                    venta.Detalles.Add(new DetalleVenta
-                                    {
-                                        ProductoID = Convert.ToInt32(reader["ProductoID"]),
-                                        NombreProducto = reader["NombreProducto"].ToString(),
-                                        Cantidad = Convert.ToInt32(reader["Cantidad"]),
-                                        PrecioUnitario = Convert.ToDecimal(reader["PrecioUnitario"])
-                                    });
-                                }
+                                    ProductoID = Convert.ToInt32(reader["ProductoID"]),
+                                    NombreProducto = reader["NombreProducto"].ToString(),
+                                    Cantidad = Convert.ToInt32(reader["Cantidad"]),
+                                    PrecioUnitario = Convert.ToDecimal(reader["PrecioUnitario"])
+                                });
                             }
+                            reader.Close();
                         }
                     }
-
                 }
 
                 return venta;
@@ -145,8 +157,12 @@ namespace GestionFarmacia.Data
             {
                 throw new Exception("Error al obtener la venta por ID con detalles.", ex);
             }
+            finally
+            {
+                if (_connection.State == ConnectionState.Open)
+                    _connection.Close();
+            }
         }
-
 
         public List<Venta> ObtenerTodos()
         {
@@ -154,12 +170,13 @@ namespace GestionFarmacia.Data
 
             try
             {
-                using (SqlConnection conn = new SqlConnection(_connectionString))
-                using (SqlCommand cmd = new SqlCommand("SP_ConsultarVentas", conn))
+                if (_connection.State != ConnectionState.Open)
+                    _connection.Open();
+
+                using (SqlCommand cmd = new SqlCommand("SP_ConsultarVentas", _connection))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
 
-                    conn.Open();
                     using (SqlDataReader reader = cmd.ExecuteReader())
                     {
                         while (reader.Read())
@@ -172,13 +189,20 @@ namespace GestionFarmacia.Data
                                 TotalVenta = Convert.ToDecimal(reader["TotalVenta"])
                             });
                         }
+                        reader.Close();
                     }
                 }
+
                 return ventas;
             }
             catch (Exception ex)
             {
                 throw new Exception("Error al obtener las ventas.", ex);
+            }
+            finally
+            {
+                if (_connection.State == ConnectionState.Open)
+                    _connection.Close();
             }
         }
 
@@ -188,15 +212,15 @@ namespace GestionFarmacia.Data
 
             try
             {
-                using (SqlConnection conn = new SqlConnection(_connectionString))
-                using (SqlCommand cmd = new SqlCommand("SP_ObtenerReporteVentas", conn))
+                if (_connection.State != ConnectionState.Open)
+                    _connection.Open();
+
+                using (SqlCommand cmd = new SqlCommand("SP_ObtenerReporteVentas", _connection))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
-
                     cmd.Parameters.AddWithValue("@FechaInicio", fechaInicio);
                     cmd.Parameters.AddWithValue("@FechaFin", fechaFin);
 
-                    conn.Open();
                     using (SqlDataReader reader = cmd.ExecuteReader())
                     {
                         while (reader.Read())
@@ -209,13 +233,20 @@ namespace GestionFarmacia.Data
                                 TotalVenta = Convert.ToDecimal(reader["TotalVenta"])
                             });
                         }
+                        reader.Close();
                     }
                 }
+
                 return ventas;
             }
             catch (Exception ex)
             {
                 throw new Exception("Error al obtener las ventas por rango de fechas.", ex);
+            }
+            finally
+            {
+                if (_connection.State == ConnectionState.Open)
+                    _connection.Close();
             }
         }
     }

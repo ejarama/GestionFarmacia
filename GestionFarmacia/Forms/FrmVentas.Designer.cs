@@ -51,6 +51,7 @@ namespace GestionFarmacia.Forms
             this.lblProducto = new System.Windows.Forms.Label();
             this.lblCantidad = new System.Windows.Forms.Label();
             this.lblDetalle = new System.Windows.Forms.Label();
+            this.btnBuscarVenta = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dgvDetalleVenta)).BeginInit();
             this.SuspendLayout();
             // 
@@ -134,7 +135,7 @@ namespace GestionFarmacia.Forms
             // btnRegistrarVenta
             // 
             this.btnRegistrarVenta.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnRegistrarVenta.Location = new System.Drawing.Point(148, 378);
+            this.btnRegistrarVenta.Location = new System.Drawing.Point(84, 378);
             this.btnRegistrarVenta.Name = "btnRegistrarVenta";
             this.btnRegistrarVenta.Size = new System.Drawing.Size(113, 31);
             this.btnRegistrarVenta.TabIndex = 8;
@@ -144,11 +145,12 @@ namespace GestionFarmacia.Forms
             // btnLimpiar
             // 
             this.btnLimpiar.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnLimpiar.Location = new System.Drawing.Point(322, 378);
+            this.btnLimpiar.Location = new System.Drawing.Point(241, 378);
             this.btnLimpiar.Name = "btnLimpiar";
             this.btnLimpiar.Size = new System.Drawing.Size(68, 31);
             this.btnLimpiar.TabIndex = 9;
             this.btnLimpiar.Text = "Limpiar";
+            this.btnLimpiar.Click += new System.EventHandler(this.btnLimpiar_Click);
             // 
             // lblProducto
             // 
@@ -177,9 +179,20 @@ namespace GestionFarmacia.Forms
             this.lblDetalle.TabIndex = 12;
             this.lblDetalle.Text = "Detalle Productos Agregados";
             // 
+            // btnBuscarVenta
+            // 
+            this.btnBuscarVenta.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnBuscarVenta.Location = new System.Drawing.Point(351, 378);
+            this.btnBuscarVenta.Name = "btnBuscarVenta";
+            this.btnBuscarVenta.Size = new System.Drawing.Size(121, 31);
+            this.btnBuscarVenta.TabIndex = 13;
+            this.btnBuscarVenta.Text = "Consultar Venta";
+            this.btnBuscarVenta.Click += new System.EventHandler(this.btnBuscarVenta_Click);
+            // 
             // FrmVentas
             // 
             this.ClientSize = new System.Drawing.Size(579, 434);
+            this.Controls.Add(this.btnBuscarVenta);
             this.Controls.Add(this.lblDetalle);
             this.Controls.Add(this.lblCantidad);
             this.Controls.Add(this.lblProducto);
@@ -224,5 +237,6 @@ namespace GestionFarmacia.Forms
         private Label lblProducto;
         private Label lblCantidad;
         private Label lblDetalle;
+        private Button btnBuscarVenta;
     }
 }

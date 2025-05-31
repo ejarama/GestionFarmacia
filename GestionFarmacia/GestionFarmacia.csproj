@@ -69,6 +69,12 @@
     <Compile Include="Entities\Venta.cs" />
     <Compile Include="Factory\ReporteFactory.cs" />
     <Compile Include="Factory\VentaFactory.cs" />
+    <Compile Include="Forms\FrmBuscarVenta.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FrmBuscarVenta.Designer.cs">
+      <DependentUpon>FrmBuscarVenta.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\FrmUsuarios.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -121,6 +127,9 @@
     <Compile Include="Utils\ManejadorErrores.cs" />
     <Compile Include="Utils\RolPermisos.cs" />
     <Compile Include="Utils\ValidadorEntradas.cs" />
+    <EmbeddedResource Include="Forms\FrmBuscarVenta.resx">
+      <DependentUpon>FrmBuscarVenta.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\FrmLogin.resx">
       <DependentUpon>FrmLogin.cs</DependentUpon>
     </EmbeddedResource>
