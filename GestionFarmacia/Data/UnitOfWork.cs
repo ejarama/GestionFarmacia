@@ -1,11 +1,10 @@
-﻿using System;
+﻿using GestionFarmacia.Entities;
+using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
-using System.Windows.Forms;
-using GestionFarmacia.Data;
-using GestionFarmacia.Entities;
 
-namespace GestionFarmacia.Utils
+namespace GestionFarmacia.Data
 {
     public class UnitOfWork
     {
@@ -27,26 +26,27 @@ namespace GestionFarmacia.Utils
 
                 transaction = _connection.BeginTransaction();
 
-                // 1. Insertar la venta y obtener el ID generado
-                SqlCommand cmdVenta = new SqlCommand("sp_InsertarVenta", _connection, transaction);
+                // Insertar venta principal
+                SqlCommand cmdVenta = new SqlCommand("SP_InsertarVenta", _connection, transaction);
                 cmdVenta.CommandType = CommandType.StoredProcedure;
                 cmdVenta.Parameters.AddWithValue("@UsuarioID", venta.UsuarioID);
                 cmdVenta.Parameters.AddWithValue("@FechaVenta", venta.FechaVenta);
                 cmdVenta.Parameters.AddWithValue("@TotalVenta", venta.TotalVenta);
 
-                SqlParameter outVentaID = new SqlParameter("@VentaID", SqlDbType.Int)
+                // Salida con el nuevo ID generado
+                SqlParameter outputId = new SqlParameter("@VentaID", SqlDbType.Int)
                 {
                     Direction = ParameterDirection.Output
                 };
-                cmdVenta.Parameters.Add(outVentaID);
-                cmdVenta.ExecuteNonQuery();
-                venta.VentaID = (int)outVentaID.Value;
+                cmdVenta.Parameters.Add(outputId);
 
-                // 2. Procesar cada detalle
+                cmdVenta.ExecuteNonQuery();
+                venta.VentaID = Convert.ToInt32(outputId.Value);
+
+                // Insertar detalles
                 foreach (var detalle in venta.Detalles)
                 {
-                    // Insertar detalle de venta
-                    SqlCommand cmdDetalle = new SqlCommand("sp_InsertarDetalleVenta", _connection, transaction);
+                    SqlCommand cmdDetalle = new SqlCommand("SP_InsertarDetalleVenta", _connection, transaction);
                     cmdDetalle.CommandType = CommandType.StoredProcedure;
                     cmdDetalle.Parameters.AddWithValue("@VentaID", venta.VentaID);
                     cmdDetalle.Parameters.AddWithValue("@ProductoID", detalle.ProductoID);
@@ -54,34 +54,12 @@ namespace GestionFarmacia.Utils
                     cmdDetalle.Parameters.AddWithValue("@PrecioUnitario", detalle.PrecioUnitario);
                     cmdDetalle.ExecuteNonQuery();
 
-                    // Actualizar stock y obtener nuevo stock
-                    SqlCommand cmdStock = new SqlCommand("sp_ActualizarStockProducto", _connection, transaction);
+                    // Actualizar stock
+                    SqlCommand cmdStock = new SqlCommand("SP_ActualizarStock", _connection, transaction);
                     cmdStock.CommandType = CommandType.StoredProcedure;
                     cmdStock.Parameters.AddWithValue("@ProductoID", detalle.ProductoID);
                     cmdStock.Parameters.AddWithValue("@CantidadVendida", detalle.Cantidad);
-
-                    SqlParameter outStock = new SqlParameter("@NuevoStock", SqlDbType.Int)
-                    {
-                        Direction = ParameterDirection.Output
-                    };
-                    cmdStock.Parameters.Add(outStock);
                     cmdStock.ExecuteNonQuery();
-
-                    int nuevoStock = (int)outStock.Value;
-
-                    // Verificar stock mínimo
-                    int stockMinimo = ObtenerStockMinimo(detalle.ProductoID, transaction);
-                    if (nuevoStock < stockMinimo)
-                    {
-                        string nombre = ObtenerNombreProducto(detalle.ProductoID, transaction);
-                        MessageBox.Show(
-                            $"El producto '{detalle.NombreProducto}' (ID: {detalle.ProductoID}) tiene un stock actual de {nuevoStock}, por debajo del mínimo establecido ({stockMinimo}).",
-                            "Alerta de stock bajo",
-                            MessageBoxButtons.OK,
-                            MessageBoxIcon.Warning
-                        );
-                    }
-
                 }
 
                 transaction.Commit();
@@ -90,8 +68,7 @@ namespace GestionFarmacia.Utils
             catch (Exception ex)
             {
                 transaction?.Rollback();
-                Console.WriteLine("Error en transacción de venta: " + ex.Message);
-                return false;
+                throw new Exception("Error al registrar la venta con transacción.", ex);
             }
             finally
             {
@@ -99,20 +76,5 @@ namespace GestionFarmacia.Utils
                     _connection.Close();
             }
         }
-
-        private int ObtenerStockMinimo(int productoID, SqlTransaction transaction)
-        {
-            SqlCommand cmd = new SqlCommand("SELECT StockMinimo FROM Productos WHERE ProductoID = @ProductoID", _connection, transaction);
-            cmd.Parameters.AddWithValue("@ProductoID", productoID);
-            return (int)cmd.ExecuteScalar();
-        }
-
-        private string ObtenerNombreProducto(int productoID, SqlTransaction transaction)
-        {
-            SqlCommand cmd = new SqlCommand("SELECT Nombre FROM Productos WHERE ProductoID = @ProductoID", _connection, transaction);
-            cmd.Parameters.AddWithValue("@ProductoID", productoID);
-            return cmd.ExecuteScalar().ToString();
-        }
-
     }
 }
