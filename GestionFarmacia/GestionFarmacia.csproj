@@ -51,6 +51,7 @@
     <Compile Include="Data\Interfaces\IDetalleVentaRepository.cs" />
     <Compile Include="Data\Interfaces\IProveedorProductoRepository.cs" />
     <Compile Include="Data\Interfaces\IProveedorRepository.cs" />
+    <Compile Include="Data\Interfaces\IUnitOfWork.cs" />
     <Compile Include="Data\Interfaces\IVentaRepository.cs" />
     <Compile Include="Data\Interfaces\IProductoRepository.cs" />
     <Compile Include="Data\Repositories\DetalleVentaRepository.cs" />
