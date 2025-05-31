@@ -91,6 +91,22 @@ CREATE TABLE ProveedorProducto (
 );
 GO
 
+
+--Tabla Promociones
+CREATE TABLE Promociones (
+    PromocionID INT PRIMARY KEY IDENTITY(1,1),
+    ProductoID INT NOT NULL,
+    FechaInicio DATE NOT NULL,
+    FechaFin DATE NOT NULL,
+    PorcentajeDescuento DECIMAL(5,2) NOT NULL,
+    CONSTRAINT FK_Promociones_Productos FOREIGN KEY (ProductoID) REFERENCES Productos(ProductoID)
+);
+GO
+
+CREATE INDEX IX_Promociones_Producto_Fecha
+ON Promociones (ProductoID, FechaInicio, FechaFin);
+GO
+
 -- SP Insertar Usuario
 CREATE PROCEDURE sp_insertarUsuario
 	@NombreUsuario VARCHAR(50),
@@ -690,5 +706,68 @@ BEGIN
     SELECT ProductoID
     FROM ProveedorProducto
     WHERE ProveedorID = @ProveedorID;
+END
+GO
+
+-- SP_InsertarPromocion
+CREATE PROCEDURE SP_InsertarPromocion
+    @ProductoID INT,
+    @FechaInicio DATE,
+    @FechaFin DATE,
+    @PorcentajeDescuento DECIMAL(5,2)
+AS
+BEGIN
+    INSERT INTO Promociones (ProductoID, FechaInicio, FechaFin, PorcentajeDescuento)
+    VALUES (@ProductoID, @FechaInicio, @FechaFin, @PorcentajeDescuento)
+END
+GO
+
+-- SP_ActualizarPromocion
+CREATE PROCEDURE SP_ActualizarPromocion
+    @PromocionID INT,
+    @ProductoID INT,
+    @FechaInicio DATE,
+    @FechaFin DATE,
+    @PorcentajeDescuento DECIMAL(5,2)
+AS
+BEGIN
+    UPDATE Promociones
+    SET ProductoID = @ProductoID,
+        FechaInicio = @FechaInicio,
+        FechaFin = @FechaFin,
+        PorcentajeDescuento = @PorcentajeDescuento
+    WHERE PromocionID = @PromocionID
+END
+GO
+
+-- SP_EliminarPromocion
+CREATE PROCEDURE SP_EliminarPromocion
+    @PromocionID INT
+AS
+BEGIN
+    DELETE FROM Promociones WHERE PromocionID = @PromocionID
+END
+GO
+
+-- SP_ObtenerTodasPromociones
+CREATE PROCEDURE SP_ObtenerTodasPromociones
+AS
+BEGIN
+    SELECT PromocionID, ProductoID, FechaInicio, FechaFin, PorcentajeDescuento
+    FROM Promociones
+END
+GO
+
+-- SP_ObtenerPromocionVigentePorProducto
+CREATE PROCEDURE SP_ObtenerPromocionVigentePorProducto
+    @ProductoID INT,
+    @Fecha DATE
+AS
+BEGIN
+    SELECT TOP 1 PromocionID, ProductoID, FechaInicio, FechaFin, PorcentajeDescuento
+    FROM Promociones
+    WHERE ProductoID = @ProductoID
+      AND @Fecha BETWEEN FechaInicio AND FechaFin
+    ORDER BY FechaInicio DESC
 END
 GO

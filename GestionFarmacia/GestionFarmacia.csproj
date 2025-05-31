@@ -49,6 +49,7 @@
   <ItemGroup>
     <Compile Include="Data\DatabaseConnection.cs" />
     <Compile Include="Data\Interfaces\IDetalleVentaRepository.cs" />
+    <Compile Include="Data\Interfaces\IPromocionRepository.cs" />
     <Compile Include="Data\Interfaces\IProveedorProductoRepository.cs" />
     <Compile Include="Data\Interfaces\IProveedorRepository.cs" />
     <Compile Include="Data\Interfaces\IUnitOfWork.cs" />
@@ -57,6 +58,7 @@
     <Compile Include="Data\Repositories\DetalleVentaRepository.cs" />
     <Compile Include="Data\Interfaces\IUsuarioRepository.cs" />
     <Compile Include="Data\Repositories\ProductoRepository.cs" />
+    <Compile Include="Data\Repositories\PromocionRepository.cs" />
     <Compile Include="Data\Repositories\ProveedorProductoRepository.cs" />
     <Compile Include="Data\Repositories\ProveedorRepository.cs" />
     <Compile Include="Data\Repositories\UsuarioRepository.cs" />
@@ -64,6 +66,7 @@
     <Compile Include="Data\Repositories\VentaRepository.cs" />
     <Compile Include="Entities\DetalleVenta.cs" />
     <Compile Include="Entities\Producto.cs" />
+    <Compile Include="Entities\Promocion.cs" />
     <Compile Include="Entities\Proveedor.cs" />
     <Compile Include="Entities\ProveedorProducto.cs" />
     <Compile Include="Entities\Usuario.cs" />
@@ -75,6 +78,12 @@
     </Compile>
     <Compile Include="Forms\FrmBuscarVenta.Designer.cs">
       <DependentUpon>FrmBuscarVenta.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\FrmPromociones.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FrmPromociones.Designer.cs">
+      <DependentUpon>FrmPromociones.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\FrmUsuarios.cs">
       <SubType>Form</SubType>
@@ -137,6 +146,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\FrmProductos.resx">
       <DependentUpon>FrmProductos.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FrmPromociones.resx">
+      <DependentUpon>FrmPromociones.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\FrmProveedores.resx">
       <DependentUpon>FrmProveedores.cs</DependentUpon>
