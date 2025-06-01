@@ -20,7 +20,7 @@ namespace GestionFarmacia.Services
             _promocionRepository = new PromocionRepository();
         }
 
-        public bool RegistrarVenta(Venta venta)
+        public ResultadoVenta RegistrarVenta(Venta venta)
         {
             DateTime fechaActual = DateTime.Now;
 
@@ -29,8 +29,13 @@ namespace GestionFarmacia.Services
                 var promocion = _promocionRepository.ObtenerPromocionVigentePorProducto(detalle.ProductoID, fechaActual);
                 if (promocion != null)
                 {
+                    detalle.PorcentajeDescuento = promocion.PorcentajeDescuento;
                     decimal descuento = detalle.PrecioUnitario * (promocion.PorcentajeDescuento / 100);
                     detalle.PrecioUnitario -= descuento;
+                }
+                else
+                {
+                    detalle.PorcentajeDescuento = 0;
                 }
             }
 

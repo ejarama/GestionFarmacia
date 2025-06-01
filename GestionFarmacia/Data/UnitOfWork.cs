@@ -1,10 +1,18 @@
 ﻿using GestionFarmacia.Entities;
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 
 namespace GestionFarmacia.Data
 {
+    public class ResultadoVenta
+    {
+        public bool Exito { get; set; }
+        public int VentaID { get; set; }
+        public bool PedidoAutomaticoGenerado { get; set; }
+    }
+
     public class UnitOfWork
     {
         private readonly SqlConnection _connection;
@@ -14,9 +22,10 @@ namespace GestionFarmacia.Data
             _connection = DatabaseConnection.Instance.GetConnection();
         }
 
-        public bool RegistrarVenta(Venta venta)
+        public ResultadoVenta RegistrarVenta(Venta venta)
         {
             SqlTransaction transaction = null;
+            var resultado = new ResultadoVenta { Exito = false, VentaID = 0, PedidoAutomaticoGenerado = false };
 
             try
             {
@@ -32,19 +41,19 @@ namespace GestionFarmacia.Data
                 cmdVenta.Parameters.AddWithValue("@FechaVenta", venta.FechaVenta);
                 cmdVenta.Parameters.AddWithValue("@TotalVenta", venta.TotalVenta);
 
-                // Salida con el nuevo ID generado
                 SqlParameter outputId = new SqlParameter("@VentaID", SqlDbType.Int)
                 {
                     Direction = ParameterDirection.Output
                 };
                 cmdVenta.Parameters.Add(outputId);
-
                 cmdVenta.ExecuteNonQuery();
                 venta.VentaID = Convert.ToInt32(outputId.Value);
 
-                // Insertar detalles
+                var productosConStockMinimo = new List<int>();
+
                 foreach (var detalle in venta.Detalles)
                 {
+                    // Insertar detalle
                     SqlCommand cmdDetalle = new SqlCommand("SP_InsertarDetalleVenta", _connection, transaction);
                     cmdDetalle.CommandType = CommandType.StoredProcedure;
                     cmdDetalle.Parameters.AddWithValue("@VentaID", venta.VentaID);
@@ -60,10 +69,63 @@ namespace GestionFarmacia.Data
                     cmdStock.Parameters.AddWithValue("@ProductoID", detalle.ProductoID);
                     cmdStock.Parameters.AddWithValue("@CantidadVendida", detalle.Cantidad);
                     cmdStock.ExecuteNonQuery();
+
+                    // Consultar stock actual y mínimo
+                    SqlCommand cmdConsultaStock = new SqlCommand(
+                        "SELECT CantidadStock, StockMinimo FROM Productos WHERE ProductoID = @ProductoID",
+                        _connection, transaction);
+                    cmdConsultaStock.Parameters.AddWithValue("@ProductoID", detalle.ProductoID);
+
+                    using (var reader = cmdConsultaStock.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            int stockActual = Convert.ToInt32(reader["CantidadStock"]);
+                            int stockMinimo = Convert.ToInt32(reader["StockMinimo"]);
+
+                            if (stockActual <= stockMinimo)
+                            {
+                                productosConStockMinimo.Add(detalle.ProductoID);
+                            }
+                        }
+                    }
+                }
+
+                bool seGeneroPedido = false;
+
+                foreach (int productoID in productosConStockMinimo)
+                {
+                    SqlCommand cmdRegla = new SqlCommand("SP_ObtenerReglaPedidoPorProducto", _connection, transaction);
+                    cmdRegla.CommandType = CommandType.StoredProcedure;
+                    cmdRegla.Parameters.AddWithValue("@ProductoID", productoID);
+
+                    using (var reader = cmdRegla.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            int proveedorId = Convert.ToInt32(reader["ProveedorID"]);
+                            int cantidadSugerida = Convert.ToInt32(reader["CantidadSugerida"]);
+
+                            reader.Close(); // IMPORTANTE antes de ejecutar otro comando
+
+                            SqlCommand cmdPedido = new SqlCommand("SP_InsertarPedidoAutomatico", _connection, transaction);
+                            cmdPedido.CommandType = CommandType.StoredProcedure;
+                            cmdPedido.Parameters.AddWithValue("@ProductoID", productoID);
+                            cmdPedido.Parameters.AddWithValue("@ProveedorID", proveedorId);
+                            cmdPedido.Parameters.AddWithValue("@Cantidad", cantidadSugerida);
+                            cmdPedido.ExecuteNonQuery();
+
+                            seGeneroPedido = true;
+                        }
+                    }
                 }
 
                 transaction.Commit();
-                return true;
+
+                resultado.Exito = true;
+                resultado.VentaID = venta.VentaID;
+                resultado.PedidoAutomaticoGenerado = seGeneroPedido;
+                return resultado;
             }
             catch (Exception ex)
             {

@@ -11,7 +11,10 @@ namespace GestionFarmacia.Entities
         public DateTime? FechaRecepcion { get; set; }
         public string Estado { get; set; }
 
-        // Navegación
+        // Propiedad adicional para mostrar el nombre del proveedor
+        public string ProveedorNombre { get; set; }
+
+        // Navegación a detalles, si la necesitas
         public List<DetallePedido> Detalles { get; set; } = new List<DetallePedido>();
     }
 }

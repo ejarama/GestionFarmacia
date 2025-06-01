@@ -43,13 +43,20 @@ namespace GestionFarmacia.Forms
 
                 Venta venta = VentaFactory.CrearVenta(_usuario.UsuarioID, detalleVenta);
 
-                var unitOfWork = new UnitOfWork(); // Implementaremos después
-                bool exito = unitOfWork.RegistrarVenta(venta);
+                var unitOfWork = new UnitOfWork();
+                var resultado = unitOfWork.RegistrarVenta(venta);
 
-                if (exito)
+                if (resultado.Exito)
                 {
-                    MessageBox.Show($"Venta registrada con éxito.\nNúmero de venta: {venta.VentaID}", "Registro exitoso", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    btnRegistrarVenta.Enabled = false ;
+                    string mensaje = $"Venta registrada con éxito (ID: {resultado.VentaID}).";
+
+                    if (resultado.PedidoAutomaticoGenerado)
+                    {
+                        mensaje += "\n\nSe generó automáticamente un pedido a proveedor por bajo stock.";
+                    }
+
+                    MessageBox.Show(mensaje, "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    btnRegistrarVenta.Enabled = false;
                     btnBuscarVenta.Enabled = false;
                 }
                 else

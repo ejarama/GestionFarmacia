@@ -983,3 +983,67 @@ BEGIN
     WHERE ReglaID = @ReglaID;
 END
 GO
+
+CREATE PROCEDURE SP_EliminarReglaPedido
+    @ReglaID INT
+AS
+BEGIN
+    DELETE FROM ReglasPedido
+    WHERE ReglaID = @ReglaID;
+END
+GO
+
+CREATE PROCEDURE SP_ObtenerReglaPedidoPorProducto
+    @ProductoID INT
+AS
+BEGIN
+    SELECT TOP 1 *
+    FROM ReglasPedido
+    WHERE ProductoID = @ProductoID AND Activa = 1;
+END
+GO
+
+CREATE PROCEDURE SP_ObtenerTodasReglasPedido
+AS
+BEGIN
+    SELECT *
+    FROM ReglasPedido;
+END
+GO
+
+CREATE PROCEDURE SP_ObtenerReglaPedidoPorProducto
+    @ProductoID INT
+AS
+BEGIN
+    SELECT TOP 1
+        ReglaID,
+        ProductoID,
+        ProveedorID,
+        CantidadSugerida,
+        Activa
+    FROM ReglasPedido
+    WHERE ProductoID = @ProductoID AND Activa = 1
+    ORDER BY ReglaID DESC
+END
+GO
+
+CREATE PROCEDURE SP_InsertarPedidoAutomatico
+    @ProductoID INT,
+    @ProveedorID INT,
+    @Cantidad INT
+AS
+BEGIN
+    DECLARE @PedidoID INT;
+
+    -- Insertar pedido
+    INSERT INTO Pedidos (ProveedorID, FechaPedido, Estado)
+    VALUES (@ProveedorID, GETDATE(), 'Pendiente');
+
+    SET @PedidoID = SCOPE_IDENTITY();
+
+    -- Insertar detalle del pedido
+    INSERT INTO DetallePedido (PedidoID, ProductoID, CantidadSolicitada)
+    VALUES (@PedidoID, @ProductoID, @Cantidad);
+END
+GO
+

@@ -17,6 +17,7 @@ namespace GestionFarmacia.Forms
         {
             InitializeComponent();
             _pedidoRepo = pedidoRepo;
+            CargarPedidosPendientes();
         }
 
         private void FrmRecepcionPedidos_Load(object sender, EventArgs e)
@@ -85,15 +86,44 @@ namespace GestionFarmacia.Forms
 
                 // Construcción de detalles
                 var detallesActualizados = new List<DetallePedido>();
+                bool cantidadCeroConfirmada = false;
 
                 foreach (DataGridViewRow row in dgvDetallePedido.Rows)
                 {
                     if (row.IsNewRow) continue;
 
+                    if (!int.TryParse(row.Cells["CantidadRecibida"].Value?.ToString(), out int cantidadRecibida))
+                        cantidadRecibida = 0; 
+
+                    int productoId = Convert.ToInt32(row.Cells["ProductoID"].Value);
+                    int detallePedidoId = Convert.ToInt32(row.Cells["DetallePedidoID"].Value);
+                    int cantidadSolicitada = Convert.ToInt32(row.Cells["CantidadSolicitada"].Value);
+                    string nombreProducto = row.Cells["NombreProducto"].Value?.ToString();
+
+
+                    if (cantidadRecibida == 0 && !cantidadCeroConfirmada)
+                    {
+                        var respuesta = MessageBox.Show(
+                            $"La cantidad recibida para el producto '{nombreProducto}' es 0.\n¿Deseas continuar así?",
+                            "Cantidad recibida en cero",
+                            MessageBoxButtons.YesNo,
+                            MessageBoxIcon.Question
+                        );
+
+                        if (respuesta == DialogResult.No)
+                           return;
+
+                        cantidadCeroConfirmada = true; // Para no preguntar por cada uno si hay varios con 0
+                    }
+
                     detallesActualizados.Add(new DetallePedido
                     {
-                        DetallePedidoID = Convert.ToInt32(row.Cells["DetallePedidoID"].Value),
-                        CantidadRecibida = Convert.ToInt32(row.Cells["CantidadRecibida"].Value)
+                        DetallePedidoID = detallePedidoId,
+                        PedidoID = pedidoSeleccionado.PedidoID,
+                        ProductoID = productoId,
+                        CantidadRecibida = cantidadRecibida,
+                        CantidadSolicitada = cantidadSolicitada
+
                     });
                 }
 

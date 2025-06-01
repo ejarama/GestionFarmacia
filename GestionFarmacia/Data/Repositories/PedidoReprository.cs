@@ -11,9 +11,9 @@ namespace GestionFarmacia.Data.Repositories
     {
         private readonly SqlConnection _connection;
 
-
         public PedidoRepository()
         {
+            // Usamos siempre la misma instancia de SqlConnection proveniente del singleton
             _connection = DatabaseConnection.Instance.GetConnection();
         }
 
@@ -37,7 +37,6 @@ namespace GestionFarmacia.Data.Repositories
                         _connection.Open();
 
                     cmd.ExecuteNonQuery();
-
                     return Convert.ToInt32(outputId.Value);
                 }
             }
@@ -91,9 +90,10 @@ namespace GestionFarmacia.Data.Repositories
                             lista.Add(new Pedido
                             {
                                 PedidoID = Convert.ToInt32(reader["PedidoID"]),
+                                ProveedorID = Convert.ToInt32(reader["ProveedorID"]),
                                 FechaPedido = Convert.ToDateTime(reader["FechaPedido"]),
                                 Estado = reader["Estado"].ToString(),
-                                ProveedorID = 0, // Se puede omitir o mapear si se requiere
+                                ProveedorNombre = reader["ProveedorNombre"].ToString()
                             });
                         }
                     }
@@ -126,18 +126,18 @@ namespace GestionFarmacia.Data.Repositories
                         {
                             lista.Add(new DetallePedido
                             {
+                                PedidoID = pedidoId,
                                 DetallePedidoID = Convert.ToInt32(reader["DetallePedidoID"]),
                                 ProductoID = Convert.ToInt32(reader["ProductoID"]),
                                 NombreProducto = reader["NombreProducto"].ToString(),
                                 CantidadSolicitada = Convert.ToInt32(reader["CantidadSolicitada"]),
                                 CantidadRecibida = reader["CantidadRecibida"] != DBNull.Value
-                                                    ? Convert.ToInt32(reader["CantidadRecibida"])
-                                                    : 0
+                                                      ? Convert.ToInt32(reader["CantidadRecibida"])
+                                                      : 0
                             });
                         }
                     }
                 }
-
                 return lista;
             }
             finally
@@ -151,57 +151,68 @@ namespace GestionFarmacia.Data.Repositories
         {
             try
             {
-                using (var conn = _connection)
+                // Usamos directamente _connection sin envolverlo en using(var conn = _connection)
+                if (_connection.State != ConnectionState.Open)
+                    _connection.Open();
+
+                using (var transaction = _connection.BeginTransaction())
                 {
-                    if (conn.State != ConnectionState.Open)
-                        conn.Open();
-
-                    using (var transaction = conn.BeginTransaction())
+                    // Actualizar recepción de cada producto
+                    foreach (var detalle in detallesRecibidos)
                     {
-                        // Actualizar recepción de cada producto
-                        foreach (var detalle in detallesRecibidos)
+                        using (var cmdDetalle = new SqlCommand("SP_ActualizarCantidadRecibida", _connection, transaction))
                         {
-                            using (var cmdDetalle = new SqlCommand("SP_ActualizarCantidadRecibida", conn, transaction))
-                            {
-                                cmdDetalle.CommandType = CommandType.StoredProcedure;
-                                cmdDetalle.Parameters.AddWithValue("@PedidoID", detalle.PedidoID);
-                                cmdDetalle.Parameters.AddWithValue("@ProductoID", detalle.ProductoID);
-                                cmdDetalle.Parameters.AddWithValue("@CantidadRecibida", detalle.CantidadRecibida);
-                                cmdDetalle.ExecuteNonQuery();
-                            }
+                            cmdDetalle.CommandType = CommandType.StoredProcedure;
 
-                            // Actualizar stock
-                            using (var cmdStock = new SqlCommand("SP_AumentarStockProducto", conn, transaction))
-                            {
-                                cmdStock.CommandType = CommandType.StoredProcedure;
-                                cmdStock.Parameters.AddWithValue("@ProductoID", detalle.ProductoID);
-                                cmdStock.Parameters.AddWithValue("@Cantidad", detalle.CantidadRecibida);
-                                cmdStock.ExecuteNonQuery();
-                            }
+                            // Aquí el SP debe esperar exactamente estos tres parámetros:
+                            cmdDetalle.Parameters.AddWithValue("@PedidoID", detalle.PedidoID);
+                            cmdDetalle.Parameters.AddWithValue("@ProductoID", detalle.ProductoID);
+                            cmdDetalle.Parameters.AddWithValue("@CantidadRecibida", detalle.CantidadRecibida);
+
+                            cmdDetalle.ExecuteNonQuery();
                         }
 
-                        // Marcar el pedido como recibido
-                        using (var cmdPedido = new SqlCommand("SP_ActualizarEstadoPedido", conn, transaction))
+                        // Actualizar stock
+                        using (var cmdStock = new SqlCommand("SP_AumentarStockProducto", _connection, transaction))
                         {
-                            cmdPedido.CommandType = CommandType.StoredProcedure;
-                            cmdPedido.Parameters.AddWithValue("@PedidoID", pedidoId);
-                            cmdPedido.Parameters.AddWithValue("@FechaRecepcion", DateTime.Now);
-                            cmdPedido.Parameters.AddWithValue("@Estado", "Recibido");
-                            cmdPedido.ExecuteNonQuery();
+                            cmdStock.CommandType = CommandType.StoredProcedure;
+                            cmdStock.Parameters.AddWithValue("@ProductoID", detalle.ProductoID);
+                            cmdStock.Parameters.AddWithValue("@Cantidad", detalle.CantidadRecibida);
+                            cmdStock.ExecuteNonQuery();
                         }
-
-                        transaction.Commit();
-                        return true;
                     }
+
+                    // Marcar el pedido como recibido
+                    using (var cmdPedido = new SqlCommand("SP_ActualizarEstadoPedido", _connection, transaction))
+                    {
+                        cmdPedido.CommandType = CommandType.StoredProcedure;
+                        cmdPedido.Parameters.AddWithValue("@PedidoID", pedidoId);
+                        cmdPedido.Parameters.AddWithValue("@FechaRecepcion", DateTime.Now);
+                        cmdPedido.Parameters.AddWithValue("@Estado", "Recibido");
+                        cmdPedido.ExecuteNonQuery();
+                    }
+
+                    transaction.Commit();
+                    return true;
                 }
             }
             catch (Exception ex)
             {
+                // Si falla algo, hacemos rollback y lanzamos la excepción
+                try
+                {
+                    _connection?.BeginTransaction()?.Rollback();
+                }
+                catch { /* Ignoramos errores de rollback */ }
+
                 throw new Exception("Error al registrar la recepción del pedido.", ex);
             }
+            finally
+            {
+                if (_connection.State == ConnectionState.Open)
+                    _connection.Close();
+            }
         }
-
-       
 
         public void ActualizarCantidadRecibida(int detallePedidoId, int cantidadRecibida)
         {
@@ -225,6 +236,5 @@ namespace GestionFarmacia.Data.Repositories
                     _connection.Close();
             }
         }
-
     }
 }
