@@ -16,6 +16,7 @@ namespace GestionFarmacia.Utils
         public static bool PuedeAccederPromociones(string rol) => rol == "Administrador";
         public static bool PuedeAccederPedidos(string rol) => rol == "Administrador" || rol == "Almacenero";
         public static bool PuedeAccederReglasPedidos(string rol) => rol == "Administrador" || rol == "Almacenero";
+        public static bool PuedeAccederPedidosManuales(string rol) => rol == "Administrador" || rol == "Almacenero";
         
     }
 }

@@ -86,6 +86,12 @@
     <Compile Include="Forms\FrmBuscarVenta.Designer.cs">
       <DependentUpon>FrmBuscarVenta.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\FrmPedidosManuales.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FrmPedidosManuales.Designer.cs">
+      <DependentUpon>FrmPedidosManuales.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\FrmPromociones.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -162,6 +168,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\FrmLogin.resx">
       <DependentUpon>FrmLogin.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FrmPedidosManuales.resx">
+      <DependentUpon>FrmPedidosManuales.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\FrmProductos.resx">
       <DependentUpon>FrmProductos.cs</DependentUpon>
