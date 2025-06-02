@@ -52,6 +52,7 @@ namespace GestionFarmacia.Forms
             this.lblCantidad = new System.Windows.Forms.Label();
             this.lblDetalle = new System.Windows.Forms.Label();
             this.btnBuscarVenta = new System.Windows.Forms.Button();
+            this.btnImprimir = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dgvDetalleVenta)).BeginInit();
             this.SuspendLayout();
             // 
@@ -98,7 +99,7 @@ namespace GestionFarmacia.Forms
             this.cmbProducto.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.cmbProducto.Location = new System.Drawing.Point(111, 103);
             this.cmbProducto.Name = "cmbProducto";
-            this.cmbProducto.Size = new System.Drawing.Size(198, 24);
+            this.cmbProducto.Size = new System.Drawing.Size(198, 28);
             this.cmbProducto.TabIndex = 4;
             // 
             // txtCantidad
@@ -106,7 +107,7 @@ namespace GestionFarmacia.Forms
             this.txtCantidad.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtCantidad.Location = new System.Drawing.Point(111, 139);
             this.txtCantidad.Name = "txtCantidad";
-            this.txtCantidad.Size = new System.Drawing.Size(140, 22);
+            this.txtCantidad.Size = new System.Drawing.Size(140, 25);
             this.txtCantidad.TabIndex = 5;
             // 
             // btnAgregar
@@ -189,9 +190,20 @@ namespace GestionFarmacia.Forms
             this.btnBuscarVenta.Text = "Consultar Venta";
             this.btnBuscarVenta.Click += new System.EventHandler(this.btnBuscarVenta_Click);
             // 
+            // btnImprimir
+            // 
+            this.btnImprimir.Location = new System.Drawing.Point(556, 275);
+            this.btnImprimir.Name = "btnImprimir";
+            this.btnImprimir.Size = new System.Drawing.Size(111, 23);
+            this.btnImprimir.TabIndex = 14;
+            this.btnImprimir.Text = "Imprimir  factura";
+            this.btnImprimir.UseVisualStyleBackColor = true;
+            this.btnImprimir.Click += new System.EventHandler(this.btnImprimir_Click);
+            // 
             // FrmVentas
             // 
-            this.ClientSize = new System.Drawing.Size(579, 434);
+            this.ClientSize = new System.Drawing.Size(686, 434);
+            this.Controls.Add(this.btnImprimir);
             this.Controls.Add(this.btnBuscarVenta);
             this.Controls.Add(this.lblDetalle);
             this.Controls.Add(this.lblCantidad);
@@ -237,5 +249,6 @@ namespace GestionFarmacia.Forms
         private Label lblCantidad;
         private Label lblDetalle;
         private Button btnBuscarVenta;
+        private Button btnImprimir;
     }
 }

@@ -4,13 +4,10 @@ using GestionFarmacia.Entities;
 using GestionFarmacia.Utils;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Drawing.Printing;
 
 namespace GestionFarmacia.Forms
 {
@@ -18,6 +15,8 @@ namespace GestionFarmacia.Forms
     {
         private List<DetalleVenta> detalleVenta = new List<DetalleVenta>();
         private Usuario _usuario;
+        private PrintDocument printDocument = new PrintDocument();
+        private decimal totalFactura;
 
         public FrmVentas(Usuario usuario)
         {
@@ -29,7 +28,6 @@ namespace GestionFarmacia.Forms
 
             CargarProductos();
         }
-
 
         private void btnRegistrarVenta_Click(object sender, EventArgs e)
         {
@@ -69,7 +67,6 @@ namespace GestionFarmacia.Forms
                 ManejadorErrores.Mostrar(ex);
             }
         }
-
 
         private void btnAgregar_Click(object sender, EventArgs e)
         {
@@ -116,7 +113,6 @@ namespace GestionFarmacia.Forms
                     });
                 }
 
-
                 ActualizarDetalle();
                 txtCantidad.Clear();
                 cmbProducto.SelectedIndex = -1;
@@ -127,7 +123,6 @@ namespace GestionFarmacia.Forms
             }
         }
 
-
         private void ActualizarDetalle()
         {
             dgvDetalleVenta.DataSource = null;
@@ -137,7 +132,6 @@ namespace GestionFarmacia.Forms
             decimal total = detalleVenta.Sum(d => d.Subtotal);
             lblTotal.Text = $"Total: ${total:F2}";
         }
-
 
         private void LimpiarFormulario()
         {
@@ -160,7 +154,6 @@ namespace GestionFarmacia.Forms
             }
         }
 
-
         private void dgvDetalleVenta_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             try
@@ -178,12 +171,11 @@ namespace GestionFarmacia.Forms
             }
         }
 
-
         private void CargarProductos()
         {
             try
             {
-                var productoRepo = new ProductoRepository(); // o inyectado si prefieres
+                var productoRepo = new ProductoRepository();
                 var productos = productoRepo.ObtenerTodos();
 
                 cmbProducto.DataSource = productos;
@@ -213,18 +205,14 @@ namespace GestionFarmacia.Forms
 
                     detalleVenta = venta.Detalles;
 
-                    // Mostrar datos
                     lblFecha.Text = $"Fecha: {venta.FechaVenta:dd/MM/yyyy}";
                     lblUsuario.Text = $"Usuario ID: {venta.UsuarioID}";
                     lblTotal.Text = $"Total: ${venta.TotalVenta:F2}";
 
-                    // Deshabilitar botones
                     btnRegistrarVenta.Enabled = false;
                     btnAgregar.Enabled = false;
 
-
-
-                    ActualizarDetalle(); // Refresca el DGV
+                    ActualizarDetalle();
                 }
                 catch (Exception ex)
                 {
@@ -280,6 +268,50 @@ namespace GestionFarmacia.Forms
         private void btnLimpiar_Click(object sender, EventArgs e)
         {
             LimpiarFormulario();
+        }
+
+        private void btnImprimir_Click(object sender, EventArgs e)
+        {
+            if (detalleVenta.Count == 0)
+            {
+                MessageBox.Show("No hay productos en la venta.");
+                return;
+            }
+
+            totalFactura = detalleVenta.Sum(d => d.Subtotal);
+
+            PrintPreviewDialog preview = new PrintPreviewDialog();
+            printDocument.PrintPage += new PrintPageEventHandler(PrintFactura);
+            preview.Document = printDocument;
+            preview.ShowDialog();
+        }
+
+        private void PrintFactura(object sender, PrintPageEventArgs e)
+        {
+            Graphics g = e.Graphics;
+            Font font = new Font("Arial", 10);
+            int startX = 10;
+            int startY = 20;
+            int offset = 20;
+
+            g.DrawString("FARMACIA SALUD TOTAL", new Font("Arial", 14, FontStyle.Bold), Brushes.Black, startX, startY);
+            offset += 40;
+
+            g.DrawString("Fecha: " + DateTime.Now.ToString("dd/MM/yyyy HH:mm"), font, Brushes.Black, startX, startY + offset);
+            offset += 20;
+
+            g.DrawString("Detalle de Productos:", font, Brushes.Black, startX, startY + offset);
+            offset += 20;
+
+            foreach (var d in detalleVenta)
+            {
+                string linea = $"{d.NombreProducto} x{d.Cantidad} @ {d.PrecioUnitario:C2} = {(d.Cantidad * d.PrecioUnitario):C2}";
+                g.DrawString(linea, font, Brushes.Black, startX, startY + offset);
+                offset += 20;
+            }
+
+            offset += 10;
+            g.DrawString($"TOTAL: {totalFactura:C2}", new Font("Arial", 10, FontStyle.Bold), Brushes.Black, startX, startY + offset);
         }
     }
 }
