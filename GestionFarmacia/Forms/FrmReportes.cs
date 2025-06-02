@@ -1,7 +1,6 @@
-﻿using GestionFarmacia.Data;
-using GestionFarmacia.Data.Repositories;
-using GestionFarmacia.Entities;
+﻿using GestionFarmacia.Entities;
 using GestionFarmacia.Reportes;
+using GestionFarmacia.Reportes.GestionFarmacia.Reportes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +10,7 @@ namespace GestionFarmacia.Forms
 {
     public partial class FrmReportes : Form
     {
-        private List<Venta> _ventas;
+        private List<object> _reporteDatos;
 
         public FrmReportes()
         {
@@ -39,15 +38,13 @@ namespace GestionFarmacia.Forms
             DateTime inicio = dtpFechaInicio.Value.Date;
             DateTime fin = dtpFechaFin.Value.Date.AddDays(1).AddSeconds(-1);
             string filtro = cmbFiltro.SelectedItem?.ToString();
-            string tipoReporte = "Ventas"; 
+            string tipoReporte = "VentasInventario"; // NUEVO tipo de reporte
 
             var reporte = ReporteFactory.CrearReporte(tipoReporte);
-            var datos = reporte.Generar(inicio, fin, filtro);
-
-            _ventas = datos.Cast<Venta>().ToList();
+            _reporteDatos = reporte.Generar(inicio, fin, filtro);
 
             dgvReporte.DataSource = null;
-            dgvReporte.DataSource = _ventas;
+            dgvReporte.DataSource = _reporteDatos;
             ConfigurarColumnas();
         }
 
@@ -58,14 +55,7 @@ namespace GestionFarmacia.Forms
 
             dgvReporte.Columns.Add(new DataGridViewTextBoxColumn
             {
-                HeaderText = "Venta ID",
-                DataPropertyName = "VentaID",
-                ReadOnly = true
-            });
-
-            dgvReporte.Columns.Add(new DataGridViewTextBoxColumn
-            {
-                HeaderText = "Fecha",
+                HeaderText = "Fecha Venta",
                 DataPropertyName = "FechaVenta",
                 ReadOnly = true,
                 DefaultCellStyle = { Format = "dd/MM/yyyy" }
@@ -73,8 +63,37 @@ namespace GestionFarmacia.Forms
 
             dgvReporte.Columns.Add(new DataGridViewTextBoxColumn
             {
-                HeaderText = "Usuario",
-                DataPropertyName = "UsuarioID",
+                HeaderText = "Producto ID",
+                DataPropertyName = "ProductoID",
+                ReadOnly = true
+            });
+
+            dgvReporte.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                HeaderText = "Producto",
+                DataPropertyName = "ProductoNombre",
+                ReadOnly = true
+            });
+
+            dgvReporte.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                HeaderText = "Cantidad Vendida",
+                DataPropertyName = "Cantidad",
+                ReadOnly = true
+            });
+
+            dgvReporte.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                HeaderText = "Precio Unitario",
+                DataPropertyName = "PrecioUnitario",
+                ReadOnly = true,
+                DefaultCellStyle = { Format = "C2" }
+            });
+
+            dgvReporte.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                HeaderText = "Stock Actual",
+                DataPropertyName = "StockActual",
                 ReadOnly = true
             });
 
@@ -87,8 +106,8 @@ namespace GestionFarmacia.Forms
 
             dgvReporte.Columns.Add(new DataGridViewTextBoxColumn
             {
-                HeaderText = "Total",
-                DataPropertyName = "TotalVenta",
+                HeaderText = "Total Parcial",
+                DataPropertyName = "TotalParcial",
                 ReadOnly = true,
                 DefaultCellStyle = { Format = "C2" }
             });

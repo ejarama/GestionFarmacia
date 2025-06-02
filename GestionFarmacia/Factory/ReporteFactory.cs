@@ -6,16 +6,23 @@ using System.Threading.Tasks;
 
 namespace GestionFarmacia.Reportes
 {
-    public static class ReporteFactory
+    namespace GestionFarmacia.Reportes
     {
-        public static IReporte CrearReporte(string tipo)
+        public static class ReporteFactory
         {
-            switch (tipo)
+            public static IReporte CrearReporte(string tipo)
             {
-                case "Ventas":
-                    return new ReporteVentas();
-                default:
-                    throw new ArgumentException("Tipo de reporte no reconocido");
+                switch (tipo)
+                {
+                    case "Ventas":
+                        return new ReporteVentas();
+
+                    case "VentasInventario": 
+                        return new ReporteVentasInventario();
+
+                    default:
+                        throw new ArgumentException("Tipo de reporte no reconocido");
+                }
             }
         }
     }
