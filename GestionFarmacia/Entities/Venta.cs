@@ -9,6 +9,8 @@ namespace GestionFarmacia.Entities
         public int UsuarioID { get; set; } 
         public DateTime FechaVenta { get; set; }
         public decimal TotalVenta { get; set; }
+
+        public string TipoEntrega { get; set; }
         public List<DetalleVenta> Detalles { get; set; } = new List<DetalleVenta>();
     }
 }

@@ -145,6 +145,7 @@ namespace GestionFarmacia.Forms
             this.Controls.Add(this.lblReportes);
             this.Name = "FrmReportes";
             this.Text = "FrmReportes";
+            this.Load += new System.EventHandler(this.FrmReportes_Load);
             ((System.ComponentModel.ISupportInitialize)(this.dgvReporte)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();

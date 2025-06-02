@@ -4,9 +4,19 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GestionFarmacia.Factory
+namespace GestionFarmacia.Reportes
 {
-    class ReporteFactory
+    public static class ReporteFactory
     {
+        public static IReporte CrearReporte(string tipo)
+        {
+            switch (tipo)
+            {
+                case "Ventas":
+                    return new ReporteVentas();
+                default:
+                    throw new ArgumentException("Tipo de reporte no reconocido");
+            }
+        }
     }
 }

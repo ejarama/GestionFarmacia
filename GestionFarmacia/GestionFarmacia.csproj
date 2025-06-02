@@ -54,6 +54,7 @@
     <Compile Include="Data\Interfaces\IProveedorProductoRepository.cs" />
     <Compile Include="Data\Interfaces\IProveedorRepository.cs" />
     <Compile Include="Data\Interfaces\IReglaPedidoRepository.cs" />
+    <Compile Include="Data\Interfaces\IReporte.cs" />
     <Compile Include="Data\Interfaces\IUnitOfWork.cs" />
     <Compile Include="Data\Interfaces\IVentaRepository.cs" />
     <Compile Include="Data\Interfaces\IProductoRepository.cs" />
@@ -76,6 +77,8 @@
     <Compile Include="Entities\Proveedor.cs" />
     <Compile Include="Entities\ProveedorProducto.cs" />
     <Compile Include="Entities\ReglaPedido.cs" />
+    <Compile Include="Entities\ReporteInventario.cs" />
+    <Compile Include="Entities\ReporteVentas.cs" />
     <Compile Include="Entities\Usuario.cs" />
     <Compile Include="Entities\Venta.cs" />
     <Compile Include="Factory\ReporteFactory.cs" />
