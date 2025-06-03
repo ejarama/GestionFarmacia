@@ -42,6 +42,18 @@ Este proyecto es una aplicación de escritorio desarrollada en **C# con Windows 
 |--------------------|------------------------|
 | ![Principal](./docs/captura1.png) | ![Usuarios](./docs/captura2.png) |
 
+| Almacenero | Factura | Generar Factura |
+|------------|---------|------------------|
+| ![](./docs/Almacenero.png) | ![](./docs/Factura.png) | ![](./docs/GenerarFaqctura.png) |
+
+| Productos | Promociones | Proveedores |
+|-----------|-------------|-------------|
+| ![](./docs/Productos.png) | ![](./docs/Promociones.png) | ![](./docs/Proveedores.png) |
+
+| Stock Bajo | Vendedor | Ventas |
+|------------|----------|--------|
+| ![](./docs/StockBajo.png) | ![](./docs/Vendedor.png) | ![](./docs/Ventas.png) |
+
 ---
 
 ## 🚀 Cómo compilar y ejecutar
