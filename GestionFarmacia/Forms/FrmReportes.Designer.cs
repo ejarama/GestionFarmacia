@@ -32,10 +32,8 @@ namespace GestionFarmacia.Forms
             this.lblReportes = new System.Windows.Forms.Label();
             this.lblFechaInicio = new System.Windows.Forms.Label();
             this.lblFechaFin = new System.Windows.Forms.Label();
-            this.lblFiltro = new System.Windows.Forms.Label();
             this.dtpFechaInicio = new System.Windows.Forms.DateTimePicker();
             this.dtpFechaFin = new System.Windows.Forms.DateTimePicker();
-            this.cmbFiltro = new System.Windows.Forms.ComboBox();
             this.btnGenerarReporte = new System.Windows.Forms.Button();
             this.lblReporte = new System.Windows.Forms.Label();
             this.dgvReporte = new System.Windows.Forms.DataGridView();
@@ -75,17 +73,6 @@ namespace GestionFarmacia.Forms
             this.lblFechaFin.TabIndex = 3;
             this.lblFechaFin.Text = "Fecha Fin: ";
             // 
-            // lblFiltro
-            // 
-            this.lblFiltro.AutoSize = true;
-            this.lblFiltro.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblFiltro.Location = new System.Drawing.Point(67, 142);
-            this.lblFiltro.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.lblFiltro.Name = "lblFiltro";
-            this.lblFiltro.Size = new System.Drawing.Size(63, 16);
-            this.lblFiltro.TabIndex = 4;
-            this.lblFiltro.Text = "Filtro por:";
-            // 
             // dtpFechaInicio
             // 
             this.dtpFechaInicio.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -104,16 +91,6 @@ namespace GestionFarmacia.Forms
             this.dtpFechaFin.Size = new System.Drawing.Size(192, 22);
             this.dtpFechaFin.TabIndex = 6;
             // 
-            // cmbFiltro
-            // 
-            this.cmbFiltro.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.cmbFiltro.FormattingEnabled = true;
-            this.cmbFiltro.Location = new System.Drawing.Point(152, 139);
-            this.cmbFiltro.Margin = new System.Windows.Forms.Padding(2);
-            this.cmbFiltro.Name = "cmbFiltro";
-            this.cmbFiltro.Size = new System.Drawing.Size(92, 24);
-            this.cmbFiltro.TabIndex = 7;
-            // 
             // btnGenerarReporte
             // 
             this.btnGenerarReporte.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -130,7 +107,7 @@ namespace GestionFarmacia.Forms
             // 
             this.lblReporte.AutoSize = true;
             this.lblReporte.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblReporte.Location = new System.Drawing.Point(67, 182);
+            this.lblReporte.Location = new System.Drawing.Point(61, 147);
             this.lblReporte.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblReporte.Name = "lblReporte";
             this.lblReporte.Size = new System.Drawing.Size(133, 16);
@@ -140,12 +117,12 @@ namespace GestionFarmacia.Forms
             // dgvReporte
             // 
             this.dgvReporte.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgvReporte.Location = new System.Drawing.Point(70, 200);
+            this.dgvReporte.Location = new System.Drawing.Point(66, 165);
             this.dgvReporte.Margin = new System.Windows.Forms.Padding(2);
             this.dgvReporte.Name = "dgvReporte";
             this.dgvReporte.RowHeadersWidth = 51;
             this.dgvReporte.RowTemplate.Height = 24;
-            this.dgvReporte.Size = new System.Drawing.Size(700, 201);
+            this.dgvReporte.Size = new System.Drawing.Size(704, 236);
             this.dgvReporte.TabIndex = 10;
             // 
             // FrmReportes
@@ -156,10 +133,8 @@ namespace GestionFarmacia.Forms
             this.Controls.Add(this.dgvReporte);
             this.Controls.Add(this.lblReporte);
             this.Controls.Add(this.btnGenerarReporte);
-            this.Controls.Add(this.cmbFiltro);
             this.Controls.Add(this.dtpFechaFin);
             this.Controls.Add(this.dtpFechaInicio);
-            this.Controls.Add(this.lblFiltro);
             this.Controls.Add(this.lblFechaFin);
             this.Controls.Add(this.lblFechaInicio);
             this.Controls.Add(this.lblReportes);
@@ -178,10 +153,8 @@ namespace GestionFarmacia.Forms
         private System.Windows.Forms.Label lblReportes;
         private System.Windows.Forms.Label lblFechaInicio;
         private System.Windows.Forms.Label lblFechaFin;
-        private System.Windows.Forms.Label lblFiltro;
         private System.Windows.Forms.DateTimePicker dtpFechaInicio;
         private System.Windows.Forms.DateTimePicker dtpFechaFin;
-        private System.Windows.Forms.ComboBox cmbFiltro;
         private System.Windows.Forms.Button btnGenerarReporte;
         private System.Windows.Forms.Label lblReporte;
         private System.Windows.Forms.DataGridView dgvReporte;
