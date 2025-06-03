@@ -3,27 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using GestionFarmacia.Data.Interfaces;
+using GestionFarmacia.Data.Repositories;
+using System.Data.SqlClient;
+using GestionFarmacia.Data;
 
-namespace GestionFarmacia.Reportes
+public static class ReporteFactory
 {
-    namespace GestionFarmacia.Reportes
+    public static IReporte CrearReporte()
     {
-        public static class ReporteFactory
-        {
-            public static IReporte CrearReporte(string tipo)
-            {
-                switch (tipo)
-                {
-                    case "Ventas":
-                        return new ReporteVentas();
-
-                    case "VentasInventario": 
-                        return new ReporteVentasInventario();
-
-                    default:
-                        throw new ArgumentException("Tipo de reporte no reconocido");
-                }
-            }
-        }
+        return new ReporteRepository(DatabaseConnection.Instance.GetConnection());
     }
 }
+

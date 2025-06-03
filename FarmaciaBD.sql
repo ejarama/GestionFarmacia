@@ -680,9 +680,9 @@ GO
 
 
 --SP_ObtenerReporteVentas
-CREATE PROCEDURE sp_ObtenerReporteVentas
-    @FechaInicio DATE,
-    @FechaFin DATE
+CREATE PROCEDURE [dbo].[sp_ObtenerReporteVentas]
+    @FechaInicio DATETIME,
+    @FechaFin DATETIME
 AS
 BEGIN
     SELECT 
@@ -693,7 +693,10 @@ BEGIN
         dv.ProductoID,
         p.Nombre AS NombreProducto,
         dv.Cantidad,
-        dv.PrecioUnitario
+        dv.PrecioUnitario,
+		dv.PorcentajeDescuento,
+		(dv.PrecioUnitario * dv.PorcentajeDescuento)/100 as ImporteDescuento,
+		dv.Cantidad * (dv.PrecioUnitario - (dv.PrecioUnitario * dv.PorcentajeDescuento)/100) as TotalProducto
     FROM Ventas v
     INNER JOIN Usuarios u ON v.UsuarioID = u.UsuarioID
     INNER JOIN DetalleVenta dv ON v.VentaID = dv.VentaID

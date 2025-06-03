@@ -242,7 +242,7 @@ namespace GestionFarmacia.Data
             }
             catch (Exception ex)
             {
-                throw new Exception("Error al obtener las ventas por rango de fechas.", ex);
+                throw new ArgumentException("Error al obtener las ventas por rango de fechas.", ex);
             }
             finally
             {

@@ -45,94 +45,114 @@ namespace GestionFarmacia.Forms
             // lblReportes
             // 
             this.lblReportes.AutoSize = true;
-            this.lblReportes.Location = new System.Drawing.Point(272, 22);
+            this.lblReportes.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblReportes.Location = new System.Drawing.Point(204, 18);
+            this.lblReportes.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblReportes.Name = "lblReportes";
-            this.lblReportes.Size = new System.Drawing.Size(63, 16);
+            this.lblReportes.Size = new System.Drawing.Size(64, 16);
             this.lblReportes.TabIndex = 0;
             this.lblReportes.Text = "Reportes";
             // 
             // lblFechaInicio
             // 
             this.lblFechaInicio.AutoSize = true;
-            this.lblFechaInicio.Location = new System.Drawing.Point(81, 87);
+            this.lblFechaInicio.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblFechaInicio.Location = new System.Drawing.Point(61, 71);
+            this.lblFechaInicio.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblFechaInicio.Name = "lblFechaInicio";
-            this.lblFechaInicio.Size = new System.Drawing.Size(82, 16);
+            this.lblFechaInicio.Size = new System.Drawing.Size(83, 16);
             this.lblFechaInicio.TabIndex = 1;
             this.lblFechaInicio.Text = "Fecha Inicio:";
             // 
             // lblFechaFin
             // 
             this.lblFechaFin.AutoSize = true;
-            this.lblFechaFin.Location = new System.Drawing.Point(84, 137);
+            this.lblFechaFin.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblFechaFin.Location = new System.Drawing.Point(63, 111);
+            this.lblFechaFin.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblFechaFin.Name = "lblFechaFin";
-            this.lblFechaFin.Size = new System.Drawing.Size(72, 16);
+            this.lblFechaFin.Size = new System.Drawing.Size(73, 16);
             this.lblFechaFin.TabIndex = 3;
             this.lblFechaFin.Text = "Fecha Fin: ";
             // 
             // lblFiltro
             // 
             this.lblFiltro.AutoSize = true;
-            this.lblFiltro.Location = new System.Drawing.Point(94, 218);
+            this.lblFiltro.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblFiltro.Location = new System.Drawing.Point(67, 142);
+            this.lblFiltro.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblFiltro.Name = "lblFiltro";
-            this.lblFiltro.Size = new System.Drawing.Size(62, 16);
+            this.lblFiltro.Size = new System.Drawing.Size(63, 16);
             this.lblFiltro.TabIndex = 4;
             this.lblFiltro.Text = "Filtro por:";
             // 
             // dtpFechaInicio
             // 
-            this.dtpFechaInicio.Location = new System.Drawing.Point(202, 82);
+            this.dtpFechaInicio.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.dtpFechaInicio.Location = new System.Drawing.Point(152, 67);
+            this.dtpFechaInicio.Margin = new System.Windows.Forms.Padding(2);
             this.dtpFechaInicio.Name = "dtpFechaInicio";
-            this.dtpFechaInicio.Size = new System.Drawing.Size(255, 22);
+            this.dtpFechaInicio.Size = new System.Drawing.Size(192, 22);
             this.dtpFechaInicio.TabIndex = 5;
             // 
             // dtpFechaFin
             // 
-            this.dtpFechaFin.Location = new System.Drawing.Point(202, 131);
+            this.dtpFechaFin.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.dtpFechaFin.Location = new System.Drawing.Point(152, 106);
+            this.dtpFechaFin.Margin = new System.Windows.Forms.Padding(2);
             this.dtpFechaFin.Name = "dtpFechaFin";
-            this.dtpFechaFin.Size = new System.Drawing.Size(255, 22);
+            this.dtpFechaFin.Size = new System.Drawing.Size(192, 22);
             this.dtpFechaFin.TabIndex = 6;
             // 
             // cmbFiltro
             // 
+            this.cmbFiltro.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.cmbFiltro.FormattingEnabled = true;
-            this.cmbFiltro.Location = new System.Drawing.Point(178, 214);
+            this.cmbFiltro.Location = new System.Drawing.Point(152, 139);
+            this.cmbFiltro.Margin = new System.Windows.Forms.Padding(2);
             this.cmbFiltro.Name = "cmbFiltro";
-            this.cmbFiltro.Size = new System.Drawing.Size(121, 24);
+            this.cmbFiltro.Size = new System.Drawing.Size(92, 24);
             this.cmbFiltro.TabIndex = 7;
             // 
             // btnGenerarReporte
             // 
-            this.btnGenerarReporte.Location = new System.Drawing.Point(322, 215);
+            this.btnGenerarReporte.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnGenerarReporte.Location = new System.Drawing.Point(399, 86);
+            this.btnGenerarReporte.Margin = new System.Windows.Forms.Padding(2);
             this.btnGenerarReporte.Name = "btnGenerarReporte";
-            this.btnGenerarReporte.Size = new System.Drawing.Size(145, 23);
+            this.btnGenerarReporte.Size = new System.Drawing.Size(125, 32);
             this.btnGenerarReporte.TabIndex = 8;
-            this.btnGenerarReporte.Text = "generar el reporte";
+            this.btnGenerarReporte.Text = "Generar Reporte";
             this.btnGenerarReporte.UseVisualStyleBackColor = true;
+            this.btnGenerarReporte.Click += new System.EventHandler(this.btnGenerarReporte_Click);
             // 
             // lblReporte
             // 
             this.lblReporte.AutoSize = true;
-            this.lblReporte.Location = new System.Drawing.Point(97, 289);
+            this.lblReporte.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblReporte.Location = new System.Drawing.Point(67, 182);
+            this.lblReporte.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblReporte.Name = "lblReporte";
-            this.lblReporte.Size = new System.Drawing.Size(132, 16);
+            this.lblReporte.Size = new System.Drawing.Size(133, 16);
             this.lblReporte.TabIndex = 9;
             this.lblReporte.Text = " Reporte Generado:  ";
             // 
             // dgvReporte
             // 
             this.dgvReporte.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgvReporte.Location = new System.Drawing.Point(249, 272);
+            this.dgvReporte.Location = new System.Drawing.Point(70, 200);
+            this.dgvReporte.Margin = new System.Windows.Forms.Padding(2);
             this.dgvReporte.Name = "dgvReporte";
             this.dgvReporte.RowHeadersWidth = 51;
             this.dgvReporte.RowTemplate.Height = 24;
-            this.dgvReporte.Size = new System.Drawing.Size(240, 150);
+            this.dgvReporte.Size = new System.Drawing.Size(700, 201);
             this.dgvReporte.TabIndex = 10;
             // 
             // FrmReportes
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(792, 412);
             this.Controls.Add(this.dgvReporte);
             this.Controls.Add(this.lblReporte);
             this.Controls.Add(this.btnGenerarReporte);
@@ -143,6 +163,7 @@ namespace GestionFarmacia.Forms
             this.Controls.Add(this.lblFechaFin);
             this.Controls.Add(this.lblFechaInicio);
             this.Controls.Add(this.lblReportes);
+            this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "FrmReportes";
             this.Text = "FrmReportes";
             this.Load += new System.EventHandler(this.FrmReportes_Load);

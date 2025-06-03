@@ -1,25 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using GestionFarmacia.Data;
-using GestionFarmacia.Data.Repositories;
-using GestionFarmacia.Entities;
 
-namespace GestionFarmacia.Reportes
+namespace GestionFarmacia.Entities
 {
-    public class ReporteVentas : IReporte
+    public class ReporteVentas
     {
-        public List<object> Generar(DateTime fechaInicio, DateTime fechaFin, string filtroEntrega)
-        {
-            var repo = new VentaRepository();
-            var ventas = repo.ObtenerPorRangoFecha(fechaInicio, fechaFin);
-
-            if (filtroEntrega != "Todos")
-            {
-                ventas = ventas.Where(v => v.TipoEntrega == filtroEntrega).ToList();
-            }
-
-            return ventas.Cast<object>().ToList(); // Lo devolvemos como objeto genérico
-        }
+        public int VentaID { get; set; }
+        public DateTime FechaVenta { get; set; }
+        public string NombreUsuario { get; set; }
+        public decimal TotalVenta { get; set; }
+        public int ProductoID { get; set; }
+        public string NombreProducto { get; set; }
+        public int Cantidad { get; set; }
+        public decimal PrecioUnitario { get; set; }
+        public decimal PorcentajeDescuento { get; set; }
+        public decimal ImporteDescuento { get; set; }
+        public decimal TotalProducto { get; set; }
     }
 }

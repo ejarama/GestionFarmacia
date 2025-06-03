@@ -1,13 +1,12 @@
-﻿using System;
+﻿using GestionFarmacia.Entities;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace GestionFarmacia.Reportes
+namespace GestionFarmacia.Data.Interfaces
 {
     public interface IReporte
     {
-        List<object> Generar(DateTime fechaInicio, DateTime fechaFin, string filtroEntrega);
+        List<ReporteVentas> ObtenerReporteVentas(DateTime fechaInicio, DateTime fechaFin);
+      
     }
 }

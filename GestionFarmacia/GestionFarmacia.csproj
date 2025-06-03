@@ -77,8 +77,8 @@
     <Compile Include="Entities\Proveedor.cs" />
     <Compile Include="Entities\ProveedorProducto.cs" />
     <Compile Include="Entities\ReglaPedido.cs" />
-    <Compile Include="Entities\ReporteInventario.cs" />
     <Compile Include="Entities\ReporteVentas.cs" />
+    <Compile Include="Data\Repositories\ReporteRepository.cs" />
     <Compile Include="Entities\Usuario.cs" />
     <Compile Include="Entities\Venta.cs" />
     <Compile Include="Factory\ReporteFactory.cs" />
